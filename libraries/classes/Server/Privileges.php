@@ -21,7 +21,6 @@ use PhpMyAdmin\Template;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
 
-use function __;
 use function array_map;
 use function array_merge;
 use function array_unique;
@@ -3171,6 +3170,7 @@ class Privileges
                     $dbRights,
                     $textDir
                 );
+                $usersOverview .= $this->template->render('export_modal');
             }
 
             $response = Response::getInstance();
