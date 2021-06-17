@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin;
 
-use function __;
 use function array_key_exists;
 use function closedir;
 use function htmlspecialchars;
@@ -33,16 +32,7 @@ class ThemeManager
      */
     private static $instance;
 
-    /**
-     * @var string file-system path to the theme folder
-     * @access protected
-     */
-    private $themesPath;
-
-    /** @var string path to theme folder as an URL */
-    private $themesPathUrl;
-
-    /** @var array<string,Theme> available themes */
+    /** @var array<string, Theme> available themes */
     public $themes = [];
 
     /** @var string  cookie name */
@@ -70,8 +60,6 @@ class ThemeManager
         $this->themes = [];
         $this->themeDefault = self::FALLBACK_THEME;
         $this->activeTheme = '';
-        $this->themesPath = self::getThemesFsDir();
-        $this->themesPathUrl = self::getThemesDir();
 
         $this->setThemePerServer($GLOBALS['cfg']['ThemePerServer']);
 
@@ -161,6 +149,10 @@ class ThemeManager
         $this->activeTheme = $theme;
         $this->theme = $this->themes[$theme];
 
+        if (isset($_SESSION['theme_color_scheme'])) {
+            $this->theme->setColorScheme($_SESSION['theme_color_scheme']);
+        }
+
         // need to set later
         //$this->setThemeCookie();
 
@@ -228,7 +220,7 @@ class ThemeManager
     public function loadThemes(): void
     {
         $this->themes = [];
-        $dirHandle = opendir($this->themesPath);
+        $dirHandle = opendir(ROOT_PATH . 'themes/');
 
         if ($dirHandle === false) {
             trigger_error('Error: cannot open themes folder: ./themes', E_USER_WARNING);
@@ -237,7 +229,7 @@ class ThemeManager
         }
 
         while (($dir = readdir($dirHandle)) !== false) {
-            if ($dir === '.' || $dir === '..' || ! @is_dir($this->themesPath . $dir)) {
+            if ($dir === '.' || $dir === '..' || ! @is_dir(ROOT_PATH . 'themes/' . $dir . '/')) {
                 continue;
             }
 
@@ -245,11 +237,7 @@ class ThemeManager
                 continue;
             }
 
-            $newTheme = Theme::load(
-                $this->themesPathUrl . $dir,
-                $this->themesPath . $dir . DIRECTORY_SEPARATOR,
-                $dir
-            );
+            $newTheme = Theme::load($dir);
             if (! $newTheme instanceof Theme) {
                 continue;
             }
@@ -308,6 +296,20 @@ class ThemeManager
      */
     public static function getThemesDir(): string
     {
-        return './themes/';// This is an URL
+        return './themes' . DIRECTORY_SEPARATOR;
+    }
+
+    public function getActiveTheme(): ?Theme
+    {
+        return $this->theme;
+    }
+
+    public function setActiveColorScheme(string $colorScheme): void
+    {
+        if (! isset($this->theme)) {
+            return;
+        }
+
+        $this->theme->setColorScheme($colorScheme);
     }
 }
