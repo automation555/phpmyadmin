@@ -72,8 +72,6 @@ use PhpMyAdmin\Controllers\Table\ChangeController;
 use PhpMyAdmin\Controllers\Table\ChartController;
 use PhpMyAdmin\Controllers\Table\CreateController;
 use PhpMyAdmin\Controllers\Table\DeleteController;
-use PhpMyAdmin\Controllers\Table\DropColumnConfirmationController;
-use PhpMyAdmin\Controllers\Table\DropColumnController;
 use PhpMyAdmin\Controllers\Table\ExportController as TableExportController;
 use PhpMyAdmin\Controllers\Table\FindReplaceController;
 use PhpMyAdmin\Controllers\Table\GetFieldController;
@@ -93,6 +91,7 @@ use PhpMyAdmin\Controllers\Table\TrackingController as TableTrackingController;
 use PhpMyAdmin\Controllers\Table\TriggersController as TableTriggersController;
 use PhpMyAdmin\Controllers\Table\ZoomSearchController;
 use PhpMyAdmin\Controllers\TableController;
+use PhpMyAdmin\Controllers\ThemeGeneratorController;
 use PhpMyAdmin\Controllers\ThemesController;
 use PhpMyAdmin\Controllers\TransformationOverviewController;
 use PhpMyAdmin\Controllers\TransformationWrapperController;
@@ -108,6 +107,7 @@ if (! defined('PHPMYADMIN')) {
 return static function (RouteCollector $routes): void {
     $routes->addGroup('', static function (RouteCollector $routes): void {
         $routes->addRoute(['GET', 'POST'], '[/]', [HomeController::class, 'index']);
+        $routes->post('/set-theme', [HomeController::class, 'setTheme']);
         $routes->post('/collation-connection', [HomeController::class, 'setCollationConnection']);
         $routes->addRoute(['GET', 'POST'], '/recent-table', [HomeController::class, 'reloadRecentTablesList']);
         $routes->addRoute(['GET', 'POST'], '/git-revision', [HomeController::class, 'gitRevision']);
@@ -249,10 +249,7 @@ return static function (RouteCollector $routes): void {
             $routes->get('/queries', [QueriesController::class, 'index']);
             $routes->addRoute(['GET', 'POST'], '/variables', [StatusVariables::class, 'index']);
         });
-        $routes->addGroup('/user-groups', static function (RouteCollector $routes): void {
-            $routes->addRoute(['GET', 'POST'], '', [UserGroupsController::class, 'index']);
-            $routes->get('/edit-form', [UserGroupsController::class, 'editUserGroupModalForm']);
-        });
+        $routes->addRoute(['GET', 'POST'], '/user-groups', [UserGroupsController::class, 'index']);
         $routes->addGroup('/variables', static function (RouteCollector $routes): void {
             $routes->get('', [VariablesController::class, 'index']);
             $routes->get('/get/{name}', [VariablesController::class, 'getValue']);
@@ -318,8 +315,8 @@ return static function (RouteCollector $routes): void {
             $routes->post('/central-columns-add', [TableStructureController::class, 'addToCentralColumns']);
             $routes->post('/central-columns-remove', [TableStructureController::class, 'removeFromCentralColumns']);
             $routes->addRoute(['GET', 'POST'], '/change', [TableStructureController::class, 'change']);
-            $routes->post('/drop', [DropColumnController::class, 'process']);
-            $routes->post('/drop-confirm', [DropColumnConfirmationController::class, 'process']);
+            $routes->post('/drop', [TableStructureController::class, 'drop']);
+            $routes->post('/drop-confirm', [TableStructureController::class, 'dropConfirm']);
             $routes->post('/fulltext', [TableStructureController::class, 'fulltext']);
             $routes->post('/index', [TableStructureController::class, 'addIndex']);
             $routes->post('/move-columns', [TableStructureController::class, 'moveColumns']);
@@ -335,16 +332,17 @@ return static function (RouteCollector $routes): void {
         $routes->addRoute(['GET', 'POST'], '/zoom-search', [ZoomSearchController::class, 'index']);
     });
     $routes->post('/tables', [TableController::class, 'all']);
-    $routes->addGroup('/themes', static function (RouteCollector $routes): void {
-        $routes->get('', [ThemesController::class, 'index']);
-        $routes->post('/set', [ThemesController::class, 'setTheme']);
-    });
+    $routes->get('/themes', [ThemesController::class, 'index']);
     $routes->addGroup('/transformation', static function (RouteCollector $routes): void {
         $routes->addRoute(['GET', 'POST'], '/overview', [TransformationOverviewController::class, 'index']);
         $routes->addRoute(['GET', 'POST'], '/wrapper', [TransformationWrapperController::class, 'index']);
     });
     $routes->addRoute(['GET', 'POST'], '/user-password', [UserPasswordController::class, 'index']);
     $routes->addRoute(['GET', 'POST'], '/version-check', [VersionCheckController::class, 'index']);
+    $routes->addGroup('/theme-generator', static function (RouteCollector $routes): void {
+        $routes->get('', [ThemeGeneratorController::class, 'index']);
+        $routes->post('/save', [ThemeGeneratorController::class, 'save']);
+    });
     $routes->addGroup('/view', static function (RouteCollector $routes): void {
         $routes->addRoute(['GET', 'POST'], '/create', [ViewCreateController::class, 'index']);
         $routes->addRoute(['GET', 'POST'], '/operations', [ViewOperationsController::class, 'index']);
