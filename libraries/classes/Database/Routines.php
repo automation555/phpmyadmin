@@ -16,8 +16,6 @@ use PhpMyAdmin\SqlParser\Utils\Routine;
 use PhpMyAdmin\Template;
 use PhpMyAdmin\Util;
 
-use function __;
-use function _ngettext;
 use function array_merge;
 use function count;
 use function explode;
@@ -483,7 +481,7 @@ class Routines
 
         $retval['item_type']         = 'PROCEDURE';
         $retval['item_type_toggle']  = 'FUNCTION';
-        if (isset($_REQUEST['item_type']) && $_REQUEST['item_type'] === 'FUNCTION') {
+        if (isset($_POST['item_type']) && $_POST['item_type'] === 'FUNCTION') {
             $retval['item_type']         = 'FUNCTION';
             $retval['item_type_toggle']  = 'PROCEDURE';
         }
@@ -1277,12 +1275,12 @@ class Routines
             $output  = Generator::formatSql(implode("\n", $queries));
 
             // Display results
-            $output .= '<div class="card my-3"><div class="card-header">';
+            $output .= '<fieldset class="pma-fieldset"><legend>';
             $output .= sprintf(
                 __('Execution results of routine %s'),
                 Util::backquote(htmlspecialchars($routine['item_name']))
             );
-            $output .= '</div><div class="card-body">';
+            $output .= '</legend>';
 
             do {
                 $result = $this->dbi->storeResult();
@@ -1312,6 +1310,8 @@ class Routines
                     break;
                 }
 
+                $output .= '<br>';
+
                 $this->dbi->freeResult($result);
 
                 $outcome = $this->dbi->nextResult();
@@ -1319,7 +1319,7 @@ class Routines
         }
 
         if ($outcome) {
-            $output .= '</div></div>';
+            $output .= '</fieldset>';
 
             $message = __('Your SQL query has been executed successfully.');
             if ($routine['item_type'] === 'PROCEDURE') {
@@ -1712,13 +1712,10 @@ class Routines
                 exit;
             }
 
-            $output = '<div class="container">';
-            $output .= '<h2>' . $title . '</h2>';
-            $output .= '<div class="card"><div class="card-body">';
-            $output .= '<textarea rows="15" class="form-control">' . $exportData . '</textarea>';
-            $output .= '</div></div></div>';
-
-            $this->response->addHTML($output);
+            $exportData = '<textarea cols="40" rows="15" style="width: 100%;">'
+                . $exportData . '</textarea>';
+            echo "<fieldset class=\"pma-fieldset\">\n" . '<legend>' . $title . "</legend>\n"
+                . $exportData . "</fieldset>\n";
 
             return;
         }
@@ -1740,6 +1737,6 @@ class Routines
             exit;
         }
 
-        $this->response->addHTML($message->getDisplay());
+        echo $message->getDisplay();
     }
 }
