@@ -22,7 +22,6 @@ use PhpMyAdmin\Template;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
 
-use function __;
 use function count;
 use function implode;
 use function mb_strstr;
@@ -196,6 +195,16 @@ class OperationsController extends AbstractController
                         && ! empty($_POST['adjust_privileges'])
                     ) {
                         $this->operations->adjustPrivilegesRenameOrMoveTable(
+                            $oldDb,
+                            $oldTable,
+                            $_POST['db'],
+                            $_POST['new_name']
+                        );
+                    }
+
+                    // Alter view
+                    if (! empty($_POST['adjust_views'])) {
+                        $this->operations->adjustViews(
                             $oldDb,
                             $oldTable,
                             $_POST['db'],

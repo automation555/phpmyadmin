@@ -1,4 +1,9 @@
 <?php
+/**
+ * TableStructureController_Test class
+ *
+ * this class is for testing StructureController class
+ */
 
 declare(strict_types=1);
 
@@ -18,7 +23,9 @@ use PhpMyAdmin\Transformations;
 use ReflectionClass;
 
 /**
- * @covers \PhpMyAdmin\Controllers\Table\StructureController
+ * TableStructureController_Test class
+ *
+ * this class is for testing StructureController class
  */
 class StructureControllerTest extends AbstractTestCase
 {
@@ -174,6 +181,34 @@ class StructureControllerTest extends AbstractTestCase
     {
         $class = new ReflectionClass(StructureController::class);
         $method = $class->getMethod('adjustColumnPrivileges');
+        $method->setAccessible(true);
+
+        $relation = new Relation($GLOBALS['dbi'], $this->template);
+        $ctrl = new StructureController(
+            $this->response,
+            $this->template,
+            $GLOBALS['db'],
+            $GLOBALS['table'],
+            $relation,
+            new Transformations(),
+            new CreateAddField($GLOBALS['dbi']),
+            new RelationCleanup($GLOBALS['dbi'], $relation),
+            $GLOBALS['dbi'],
+            new FlashMessages()
+        );
+
+        $this->assertFalse(
+            $method->invokeArgs($ctrl, [[]])
+        );
+    }
+
+    /**
+     * Tests for adjustViews()
+     */
+    public function testAdjustViewsPrivileges(): void
+    {
+        $class = new ReflectionClass(StructureController::class);
+        $method = $class->getMethod('adjustViews');
         $method->setAccessible(true);
 
         $relation = new Relation($GLOBALS['dbi'], $this->template);
