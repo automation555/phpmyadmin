@@ -14,8 +14,8 @@
         table_name_url="{{ designerTable.getTableName()|escape('url') }}"
         cellpadding="0"
         cellspacing="0"
-        class="table table-sm table-striped table-hover w-auto designer_tab"
-        style="position:absolute; {{ text_dir == 'rtl' ? 'right' : 'left' }}:
+        class="pma-table designer_tab"
+        style="position:absolute; left:
             {{- tab_pos[t_n] is defined ? tab_pos[t_n]['X'] : random(range(20, 700)) }}px; top:
             {{- tab_pos[t_n] is defined ? tab_pos[t_n]['Y'] : random(range(20, 550)) }}px; display:
             {{- tab_pos[t_n] is defined or display_page == -1 ? 'block' : 'none' }}; z-index: 1;"> <!--"-->
@@ -42,11 +42,11 @@
                     db_url="{{ designerTable.getDatabaseName()|escape('url') }}"
                     table_name="{{ designerTable.getTableName() }}"
                     table_name_url="{{ designerTable.getTableName()|escape('url') }}">
-                    <img src="{{ image('designer/exec_small.png') }}"
+                    <img src="{{ theme.getImgPath('designer/exec_small.png') }}"
                         title="{% trans 'See table structure' %}">
                 </td>
                 <td id="id_zag_{{ t_n_url }}"
-                    class="tab_zag text-nowrap tab_zag_noquery"
+                    class="tab_zag nowrap tab_zag_noquery"
                     table_name="{{ t_n_url }}"
                     query_set="{{ has_query ? 1 : 0 }}">
                     <span class="owner">{{ designerTable.getDatabaseName() }}</span>
@@ -78,6 +78,7 @@
                     {% set click_field_param = click_field_param|merge([tables_all_keys[tmp_column] is defined ? 1 : 0]) %}
                 {% endif %}
                 {% set click_field_param = click_field_param|merge([db]) %}
+                {% set click_field_param = click_field_param|merge([tab_column[t_n]['TYPE'][j]]) %}
                 <tr id="id_tr_{{ designerTable.getTableName()|escape('url') }}.{{ tab_column[t_n]['COLUMN_NAME'][j] }}" class="tab_field
                     {{- display_field == tab_column[t_n]['COLUMN_NAME'][j] ? '_3' }}" click_field_param="
                     {{- click_field_param|join(',') }}">
@@ -97,9 +98,9 @@
                     {% endif %}
                     <td width="10px" colspan="3" id="{{ t_n_url }}.
                         {{- tab_column[t_n]['COLUMN_NAME'][j]|url_encode }}">
-                        <div class="text-nowrap">
+                        <div class="nowrap">
                             {% set type = columns_type[t_n ~ '.' ~ tab_column[t_n]['COLUMN_NAME'][j]] %}
-                            <img src="{{ image(type) }}.png" alt="*">
+                            <img src="{{ theme.getImgPath(type) }}.png" alt="*">
                             {{ tab_column[t_n]['COLUMN_NAME'][j] }} : {{ tab_column[t_n]['TYPE'][j] }}
                         </div>
                     </td>
@@ -111,7 +112,7 @@
                             table_name="{{ table_name }}"
                             col_name="{{ col_name }}"
                             db_table_name_url="{{ t_n_url }}">
-                            <img src="{{ image('designer/exec_small.png') }}" title="{% trans 'Options'  %}" />
+                            <img src="{{ theme.getImgPath('designer/exec_small.png') }}" title="{% trans 'Options'  %}" />
                         </td>
                     {% endif %}
                 </tr>
