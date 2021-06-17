@@ -39,6 +39,7 @@ use function implode;
 use function is_array;
 use function is_int;
 use function is_string;
+use function json_decode;
 use function mb_strtolower;
 use function microtime;
 use function openlog;
@@ -400,6 +401,28 @@ class DatabaseInterface implements DbalInterface
                 $link
             );
 
+            // here, we check for Mroonga engine and compute the good data_length and index_length
+            // in the StructureController only we need to sum the two values as the other engines
+            foreach ($tables as $one_database_name => $one_database_tables) {
+                foreach ($one_database_tables as $one_table_name => $one_table_data) {
+                    if ($one_table_data['Engine'] !== 'Mroonga') {
+                        continue;
+                    }
+
+                    if (! $this->hasMroongaEngine()) {
+                        continue;
+                    }
+
+                    [
+                        $tables[$one_database_name][$one_table_name]['Data_length'],
+                        $tables[$one_database_name][$one_table_name]['Index_length'],
+                    ] = $this->getMroongaLengths(
+                        $one_database_name,
+                        $one_table_name,
+                    );
+                }
+            }
+
             if ($sort_by === 'Name' && $GLOBALS['cfg']['NaturalOrder']) {
                 // here, the array's first key is by schema name
                 foreach ($tables as $one_database_name => $one_database_tables) {
@@ -490,6 +513,26 @@ class DatabaseInterface implements DbalInterface
 
                 $each_tables = $this->fetchResult($sql, 'Name', null, $link);
 
+                // here, we check for Mroonga engine and compute the good data_length and index_length
+                // in the StructureController only we need to sum the two values as the other engines
+                foreach ($each_tables as $table_name => $table_data) {
+                    if ($table_data['Engine'] !== 'Mroonga') {
+                        continue;
+                    }
+
+                    if (! $this->hasMroongaEngine()) {
+                        continue;
+                    }
+
+                    [
+                        $each_tables[$table_name]['Data_length'],
+                        $each_tables[$table_name]['Index_length'],
+                    ] = $this->getMroongaLengths(
+                        $each_database,
+                        $table_name,
+                    );
+                }
+
                 // Sort naturally if the config allows it and we're sorting
                 // the Name column.
                 if ($sort_by === 'Name' && $GLOBALS['cfg']['NaturalOrder']) {
@@ -558,6 +601,70 @@ class DatabaseInterface implements DbalInterface
         }
 
         return $tables;
+    }
+
+    /**
+     * Returns if Mroonga is available to be used
+     *
+     * This is public to be used in the StructureComtroller, the first release
+     * of this function was looking Mroonga in the engines list but this second
+     *  method checks too that mroonga is installed succesfully
+     *
+     * @return bool true when the mroonga_command is found
+     */
+    public function hasMroongaEngine(): bool
+    {
+        $bool = $this->cache->getCachedTableContent(['mroonga_command']);
+        if ($bool === null) {
+            $result = $this->tryQuery("SELECT mroonga_command('object_list')");
+            $bool = ($result !== false);
+            $this->cache->cacheTableContent(['mroonga_command'], $bool);
+        }
+
+        return $bool;
+    }
+
+    /**
+     * Get the lengths of a table of database
+     *
+     * @param string $db_name    DB name
+     * @param string $table_name Table name
+     *
+     * @return int[]
+     */
+    private function getMroongaLengths(string $db_name, string $table_name): array
+    {
+        $this->selectDb($db_name);
+        $object_list = $this->cache->getCachedTableContent(['object_list', $db_name]);
+        if ($object_list === null) {
+            $result = $this->query("SELECT mroonga_command('object_list')");
+            $row = $this->fetchRow($result);
+            $this->freeResult($result);
+            $object_list = json_decode($row[0], true);
+            $this->cache->cacheTableContent(['object_list', $db_name], $object_list);
+        }
+
+        $dataLength = 0;
+        $indexLength = 0;
+        foreach ($object_list as $mroonga_name => $mroonga_data) {
+            if (strncmp($table_name, $mroonga_name, strlen($table_name)) !== 0) {
+                continue;
+            }
+
+            $result = $this->query("SELECT mroonga_command('object_inspect " . $mroonga_name . "')");
+            $row = $this->fetchRow($result);
+            $this->freeResult($result);
+            $temp = json_decode($row[0], true);
+            $index_prefix = $table_name . '#' . $table_name;
+            if (strncmp($index_prefix, $mroonga_name, strlen($index_prefix)) === 0) {
+                $indexLength += $temp['disk_usage'];
+                continue;
+            }
+
+            $dataLength += $temp['disk_usage'];
+        }
+
+        return [$dataLength, $indexLength];
     }
 
     /**
@@ -2169,7 +2276,6 @@ class DatabaseInterface implements DbalInterface
      * @param object|bool $result result set identifier
      *
      * @return string|int
-     * @psalm-return int|numeric-string
      */
     public function numRows($result)
     {
@@ -2203,15 +2309,14 @@ class DatabaseInterface implements DbalInterface
      * @param int  $link           link type
      * @param bool $get_from_cache whether to retrieve from cache
      *
-     * @return int|string
-     * @psalm-return int|numeric-string
+     * @return int|bool
      */
     public function affectedRows(
         $link = self::CONNECT_USER,
         bool $get_from_cache = true
     ) {
         if (! isset($this->links[$link])) {
-            return -1;
+            return false;
         }
 
         if ($get_from_cache) {
