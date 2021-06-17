@@ -201,7 +201,6 @@ return [
                 '$relationCleanup' => '@relation_cleanup',
                 '$operations' => '@operations',
                 '$dbi' => '@dbi',
-                '$flash' => '@flash',
             ],
         ],
         PhpMyAdmin\Controllers\Database\TrackingController::class => [
@@ -339,7 +338,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\FeaturesController::class => [
@@ -349,7 +347,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\ImportController::class => [
@@ -359,7 +356,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\MainPanelController::class => [
@@ -369,7 +365,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\ManageController::class => [
@@ -379,7 +374,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\NavigationController::class => [
@@ -389,7 +383,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\SqlController::class => [
@@ -399,7 +392,6 @@ return [
                 '$template' => '@template',
                 '$userPreferences' => '@user_preferences',
                 '$relation' => '@relation',
-                '$config' => '@config',
             ],
         ],
         PhpMyAdmin\Controllers\Preferences\TwoFactorController::class => [
@@ -644,27 +636,6 @@ return [
                 '$dbi' => '@dbi',
             ],
         ],
-        PhpMyAdmin\Controllers\Table\DropColumnConfirmationController::class => [
-            'class' => PhpMyAdmin\Controllers\Table\DropColumnConfirmationController::class,
-            'arguments' => [
-                '$response' => '@response',
-                '$template' => '@template',
-                '$db' => '%db%',
-                '$table' => '%table%',
-            ],
-        ],
-        PhpMyAdmin\Controllers\Table\DropColumnController::class => [
-            'class' => PhpMyAdmin\Controllers\Table\DropColumnController::class,
-            'arguments' => [
-                '$response' => '@response',
-                '$template' => '@template',
-                '$db' => '%db%',
-                '$table' => '%table%',
-                '$dbi' => '@dbi',
-                '$flash' => '@flash',
-                '$relationCleanup' => '@relation_cleanup',
-            ],
-        ],
         PhpMyAdmin\Controllers\Table\ExportController::class => [
             'class' => PhpMyAdmin\Controllers\Table\ExportController::class,
             'arguments' => [
@@ -836,7 +807,6 @@ return [
                 '$createAddField' => '@create_add_field',
                 '$relationCleanup' => '@relation_cleanup',
                 '$dbi' => '@dbi',
-                '$flash' => '@flash',
             ],
         ],
         PhpMyAdmin\Controllers\Table\TrackingController::class => [
@@ -884,7 +854,13 @@ return [
             'arguments' => [
                 '$response' => '@response',
                 '$template' => '@template',
-                '$themeManager' => '@theme_manager',
+            ],
+        ],
+        PhpMyAdmin\Controllers\ThemeGeneratorController::class => [
+            'class' => PhpMyAdmin\Controllers\ThemeGeneratorController::class,
+            'arguments' => [
+                '$response' => '@response',
+                '$template' => '@template',
             ],
         ],
         PhpMyAdmin\Controllers\TransformationOverviewController::class => [

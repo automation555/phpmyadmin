@@ -1,8 +1,7 @@
 .table {
   th,
   td {
-    text-shadow: 0 1px 0 #fff;
-    vertical-align: middle;
+    text-shadow: 0 1px 0 $table-text-shadow;
   }
 
   th {
@@ -11,6 +10,7 @@
 
   td {
     touch-action: manipulation;
+    vertical-align: middle;
   }
 
   thead th {

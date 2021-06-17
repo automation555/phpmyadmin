@@ -44,6 +44,7 @@ $border: 0;
 $th-background: #d3dce3;
 // table header and footer background
 $th-color: #000;
+$th-hyperlink-color: #3a7ead;
 // table data row background
 $bg-one: #e5e5e5;
 // table data row background, alternate
@@ -55,6 +56,7 @@ $bg-two: #d5d5d5;
 // Body
 
 $body-color: $main-color;
+$body-bg: #fff;
 
 // Links
 
@@ -85,6 +87,7 @@ $table-accent-bg: #dfdfdf;
 $table-hover-color: $browse-pointer-color;
 $table-border-color: #fff;
 $table-border-width: 0;
+$table-text-shadow: #fff;
 
 // Buttons
 
@@ -107,7 +110,6 @@ $dropdown-item-padding-x: 0;
 // Forms
 
 $form-check-input-margin-y: 0.1rem;
-$form-check-input-checked-bg-color: #0075ff;
 
 // Navs
 
@@ -139,22 +141,16 @@ $pagination-disabled-border-color: #aaa;
 $card-border-color: #aaa;
 $card-bg: #eee;
 $card-cap-bg: #fff;
-
-// Accordion
-
-$accordion-button-padding-y: 0.375rem;
-$accordion-button-padding-x: 0.75rem;
-$accordion-button-active-color: #235a81;
-$accordion-button-active-bg: $navi-background;
+$card-text-shadow: #fff;
 
 // Breadcrumbs
 
-$breadcrumb-navbar-padding-y: 0.1rem;
-$breadcrumb-navbar-padding-x: 2.2em;
-$breadcrumb-navbar-margin-bottom: 0;
-$breadcrumb-navbar-bg: #888;
+$breadcrumb-padding-y: 0.1rem;
+$breadcrumb-margin-bottom: 0;
+$breadcrumb-bg: #888;
 $breadcrumb-divider-color: #fff;
 $breadcrumb-divider: quote("»");
+$breadcrumb-border-radius: 0;
 
 // Modals
 
@@ -170,9 +166,5 @@ $alert-border-radius: 5px;
 // List group
 
 $list-group-bg: inherit;
-$list-group-item-padding-x: 0.75rem;
-$list-group-item-padding-y: 0.375rem;
-
-// Forms
-
-$label-margin-bottom: 0;
+$list-group-item-padding-x: 0;
+$list-group-item-padding-y: 0;
