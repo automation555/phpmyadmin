@@ -13,11 +13,12 @@ use PhpMyAdmin\Template;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Version;
 
-use function __;
 use function htmlspecialchars;
 
 /**
- * @covers \PhpMyAdmin\SqlQueryForm
+ * PhpMyAdmin\Tests\SqlQueryFormTest class
+ *
+ * this class is for testing PhpMyAdmin\SqlQueryForm methods
  */
 class SqlQueryFormTest extends AbstractTestCase
 {
@@ -107,7 +108,7 @@ class SqlQueryFormTest extends AbstractTestCase
         $GLOBALS['is_upload'] = true;
         //Call the test function
         $query = 'select * from PMA';
-        $html = $this->sqlQueryForm->getHtml('PMA_db', 'PMA_table', $query);
+        $html = $this->sqlQueryForm->getHtml($query);
 
         //validate 1: query
         $this->assertStringContainsString(
@@ -116,7 +117,7 @@ class SqlQueryFormTest extends AbstractTestCase
         );
 
         //validate 2: enable auto select text in textarea
-        $auto_sel = ' onclick="Functions.selectContent(this, sqlBoxLocked, true);"';
+        $auto_sel = ' data-textarea-auto-select="true"';
         $this->assertStringContainsString(
             $auto_sel,
             $html
@@ -170,7 +171,7 @@ class SqlQueryFormTest extends AbstractTestCase
         $GLOBALS['is_upload'] = true;
         $GLOBALS['lang'] = 'ja';
         $query = 'select * from PMA';
-        $html = $this->sqlQueryForm->getHtml('PMA_db', 'PMA_table', $query);
+        $html = $this->sqlQueryForm->getHtml($query);
 
         //validate 1: query
         $this->assertStringContainsString(

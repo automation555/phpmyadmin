@@ -216,6 +216,7 @@ AJAX.registerTeardown('sql.js', function () {
     $('body').off('click', 'form[name="resultsForm"].ajax button[name="submit_mult"], form[name="resultsForm"].ajax input[name="submit_mult"]');
     $(document).off('submit', '.maxRowsForm');
     $(document).off('click', '#view_as');
+    $(document).off('click', '#sqlquery');
 });
 
 /**
@@ -634,6 +635,7 @@ AJAX.registerOnload('sql.js', function () {
 
                 $('.sqlqueryresults').trigger('makegrid');
                 $('#togglequerybox').show();
+                Functions.initSlider();
 
                 if (typeof data.action_bookmark === 'undefined') {
                     if ($('#sqlqueryform input[name="retain_query_box"]').is(':checked') !== true) {
@@ -671,6 +673,7 @@ AJAX.registerOnload('sql.js', function () {
             $sqlqueryresults
                 .html(data.message)
                 .trigger('makegrid');
+            Functions.initSlider();
             Functions.highlightSql($sqlqueryresults);
         }); // end $.post()
     }); // end displayOptionsForm handler
@@ -864,6 +867,12 @@ AJAX.registerOnload('sql.js', function () {
 
     $('#view_as').on('click', function () {
         Functions.selectContent(this, sqlBoxLocked, true);
+    });
+
+    $('#sqlquery').on('click', function () {
+        if ($(this).data('textarea-auto-select') === true) {
+            Functions.selectContent(this, sqlBoxLocked, true);
+        }
     });
 }); // end $()
 
