@@ -6,8 +6,6 @@ namespace PhpMyAdmin\Controllers;
 
 use PhpMyAdmin\Theme;
 
-use function __;
-use function _pgettext;
 use function json_encode;
 
 /**
@@ -44,6 +42,7 @@ final class JavaScriptMessagesController
             ),
             'strDropTableStrongWarning' => __('You are about to DESTROY a complete table!'),
             'strTruncateTableStrongWarning' => __('You are about to TRUNCATE a complete table!'),
+            'strDeleteTableStrongWarning' => __('You are about to DELETE all the rows of the table!'),
             'strDeleteTrackingData' => __('Delete tracking data for this table?'),
             'strDeleteTrackingDataMultiple' => __('Delete tracking data for these tables?'),
             'strDeleteTrackingVersion' => __('Delete tracking data for this version?'),
@@ -344,7 +343,6 @@ final class JavaScriptMessagesController
                 'network connectivity and server status.'
             ),
             'strNoDatabasesSelected' => __('No databases selected.'),
-            'strNoTableSelected' => __('No table selected.'),
             'strNoAccountSelected' => __('No accounts selected.'),
             'strDroppingColumn' => __('Dropping column'),
             'strAddingPrimaryKey' => __('Adding primary key'),
@@ -360,7 +358,7 @@ final class JavaScriptMessagesController
             /* For Foreign key checks */
             'strForeignKeyCheck' => __('Enable foreign key checks'),
 
-            /* For database/structure.js */
+            /* For db_stucture.js */
             'strErrorRealRowCount' => __('Failed to get real row count.'),
 
             /* For database/search.js */
@@ -371,7 +369,7 @@ final class JavaScriptMessagesController
             'strDeleting' => __('Deleting'),
             'strConfirmDeleteResults' => __('Delete the matches for the %s table?'),
 
-            /* For rte.js */
+            /* For db_routines.js */
             'MissingReturn' => __('The definition of a stored function must contain a RETURN statement!'),
             'strExport' => __('Export'),
             'NoExportable' => __('No routine is exportable. Required privileges may be lacking.'),
@@ -411,7 +409,7 @@ final class JavaScriptMessagesController
             ),
             'seeMore' => __('See more'),
 
-            /* For normalization */
+            /** For normalization */
             'strAddPrimaryKey' => __('Add primary key'),
             'strPrimaryKeyAdded' => __('Primary key added.'),
             'strToNextStep' => __('Taking you to next step…'),
@@ -537,8 +535,6 @@ final class JavaScriptMessagesController
             'strSavePageAs' => __('Save page as'),
             'strOpenPage' => __('Open page'),
             'strDeletePage' => __('Delete page'),
-            /* l10n: When the user opens a page saved in the Designer */
-            'strSavedPageTableMissing' => __('Some tables saved in this page might have been renamed or deleted.'),
             'strUntitled' => __('Untitled'),
             'strSelectPage' => __('Please select a page to continue'),
             'strEnterValidPageName' => __('Please enter a valid page name'),
@@ -585,7 +581,7 @@ final class JavaScriptMessagesController
             ),
             'strOriginalLength' => __('Original length'),
 
-            /* Drag & Drop sql import messages */
+            /** Drag & Drop sql import messages */
             'dropImportMessageCancel' => __('cancel'),
             'dropImportMessageAborted' => __('Aborted'),
             'dropImportMessageFailed' => __('Failed'),
@@ -709,18 +705,8 @@ final class JavaScriptMessagesController
             'strStrong' => __('Strong'),
 
             /* U2F errors */
-            // l10n: error code 5 (from U2F API)
-            'strU2FTimeout' => _pgettext('U2F error', 'Timed out waiting for security key activation.'),
-            // l10n: error code 2 (from U2F API)
-            'strU2FBadRequest' => _pgettext('U2F error', 'Invalid request sent to security key.'),
-            // l10n: unknown error code (from U2F API)
-            'strU2FUnknown' => _pgettext('U2F error', 'Unknown security key error.'),
-            // l10n: error code 3 (from U2F API)
-            'strU2FInvalidClient' => _pgettext('U2F error', 'Client does not support security key.'),
-            // l10n: error code 4 (from U2F API) on register
-            'strU2FErrorRegister' => _pgettext('U2F error', 'Failed security key activation.'),
-            // l10n: error code 4 (from U2F API) on authanticate
-            'strU2FErrorAuthenticate' => _pgettext('U2F error', 'Invalid security key.'),
+            'strU2FTimeout' => __('Timed out waiting for security key activation.'),
+            'strU2FError' => __('Failed security key activation (%s).'),
 
             /* Designer */
             'strTableAlreadyExists' => _pgettext(
