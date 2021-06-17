@@ -2,9 +2,10 @@
 <html lang="{{ lang }}" dir="{{ text_dir }}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   {% if not allow_third_party_framing -%}
     <style id="cfs-style">html{display: none;}</style>
   {%- endif %}
@@ -18,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="{{ base_dir }}js/vendor/codemirror/lib/codemirror.css?{{ version }}">
     <link rel="stylesheet" type="text/css" href="{{ base_dir }}js/vendor/codemirror/addon/hint/show-hint.css?{{ version }}">
     <link rel="stylesheet" type="text/css" href="{{ base_dir }}js/vendor/codemirror/addon/lint/lint.css?{{ version }}">
-    <link rel="stylesheet" type="text/css" href="{{ theme_path }}/css/theme{{ text_dir == 'rtl' ? '.rtl' }}.css?{{ version }}">
+    <link rel="stylesheet" type="text/css" href="{{ theme_path }}/css/{{ theme_color_scheme != 'main' ? theme_color_scheme ~ '-' }}theme{{ text_dir == 'rtl' ? '.rtl' }}.css?{{ version }}">
     <link rel="stylesheet" type="text/css" href="{{ theme_path }}/css/printview.css?{{ version }}" media="print" id="printcss">
   {% endif %}
   <title>{{ title }}</title>

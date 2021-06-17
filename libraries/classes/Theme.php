@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin;
 
-use function __;
+use function array_key_exists;
+use function count;
 use function file_exists;
 use function file_get_contents;
 use function filemtime;
@@ -18,8 +19,6 @@ use function sprintf;
 use function trigger_error;
 use function trim;
 use function version_compare;
-
-use const DIRECTORY_SEPARATOR;
 
 use const E_USER_ERROR;
 
@@ -60,16 +59,10 @@ class Theme
     private $fsPath = '';
 
     /**
-     * @var string image path as an URL
+     * @var string image path
      * @access protected
      */
     public $imgPath = '';
-
-    /**
-     * @var string image path on the file-system
-     * @access protected
-     */
-    public $imgPathFs = '';
 
     /**
      * @var int last modification time for info file
@@ -102,6 +95,15 @@ class Theme
         'resizable-menu',
         'icons',
     ];
+
+    /** @var bool */
+    private $hasColorSchemes = false;
+
+    /** @var array<string, string> */
+    private $colorSchemes = [];
+
+    /** @var string */
+    private $colorScheme = 'main';
 
     /**
      * Loads theme information
@@ -160,22 +162,31 @@ class Theme
         $this->setVersion($data['version']);
         $this->setName($data['name']);
 
+        $this->hasColorSchemes = isset($data['schemes'])
+            && is_array($data['schemes'])
+            && array_key_exists('main', $data['schemes'])
+            && count($data['schemes']) > 1;
+
+        if ($this->hasColorSchemes) {
+            $this->colorSchemes = $data['schemes'];
+        }
+
         return true;
     }
 
-    public static function load(string $themeUrl, string $themeFsPath, string $themeName): ?self
+    public static function load(string $themeDirectory): ?self
     {
         $theme = new self();
 
-        $theme->setPath($themeUrl);
-        $theme->setFsPath($themeFsPath);
+        $theme->setPath('./themes/' . $themeDirectory);
+        $theme->setFsPath(ROOT_PATH . 'themes/' . $themeDirectory . '/');
 
         if (! $theme->loadInfo()) {
             return null;
         }
 
         $theme->checkImgPath();
-        $theme->setId($themeName);
+        $theme->setId($themeDirectory);
 
         return $theme;
     }
@@ -190,21 +201,16 @@ class Theme
     public function checkImgPath()
     {
         // try current theme first
-        if (is_dir($this->getFsPath() . 'img' . DIRECTORY_SEPARATOR)) {
+        if (is_dir($this->getFsPath() . 'img/')) {
             $this->setImgPath($this->getPath() . '/img/');
-            $this->setImgPathFs($this->getFsPath() . 'img' . DIRECTORY_SEPARATOR);
 
             return true;
         }
 
         // try fallback theme
-        $fallbackFsPathThemeDir = ThemeManager::getThemesFsDir() . ThemeManager::FALLBACK_THEME
-                                  . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR;
-        if (is_dir($fallbackFsPathThemeDir)) {
-            $fallbackUrl = ThemeManager::getThemesDir() . ThemeManager::FALLBACK_THEME
-                        . '/img/';
-            $this->setImgPath($fallbackUrl);
-            $this->setImgPathFs($fallbackFsPathThemeDir);
+        $fallback = ThemeManager::getThemesDir() . ThemeManager::FALLBACK_THEME . '/img/';
+        if (is_dir(ThemeManager::getThemesFsDir() . ThemeManager::FALLBACK_THEME . '/img/')) {
+            $this->setImgPath($fallback);
 
             return true;
         }
@@ -363,7 +369,7 @@ class Theme
     /**
      * Sets path to images for the theme
      *
-     * @param string $path path to images for this theme as an URL path
+     * @param string $path path to images for this theme
      *
      * @return void
      *
@@ -372,16 +378,6 @@ class Theme
     public function setImgPath($path)
     {
         $this->imgPath = $path;
-    }
-
-    /**
-     * Sets path to images for the theme
-     *
-     * @param string $path file-system path to images for this theme
-     */
-    public function setImgPathFs(string $path): void
-    {
-        $this->imgPathFs = $path;
     }
 
     /**
@@ -402,7 +398,7 @@ class Theme
             return $this->imgPath;
         }
 
-        if (is_readable($this->imgPathFs . $file)) {
+        if (is_readable($this->imgPath . $file)) {
             return $this->imgPath . $file;
         }
 
@@ -411,5 +407,38 @@ class Theme
         }
 
         return './themes/' . ThemeManager::FALLBACK_THEME . '/img/' . $file;
+    }
+
+    public function hasColorSchemes(): bool
+    {
+        return $this->hasColorSchemes;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getColorSchemes(): array
+    {
+        return $this->colorSchemes;
+    }
+
+    public function getColorScheme(): string
+    {
+        if ($this->hasColorSchemes) {
+            return $this->colorScheme;
+        }
+
+        return 'main';
+    }
+
+    public function setColorScheme(string $colorScheme): void
+    {
+        if (array_key_exists($colorScheme, $this->colorSchemes)) {
+            $this->colorScheme = $colorScheme;
+
+            return;
+        }
+
+        $this->colorScheme = 'main';
     }
 }
