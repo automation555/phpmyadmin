@@ -312,15 +312,50 @@
     </div>
 </form>
 <hr class="print_ignore">
-<div id="move_columns_dialog" class="hide" title="{% trans 'Move columns' %}">
-    <p>{% trans 'Move the columns by dragging them up and down.' %}</p>
-    <form action="{{ url('/table/structure/move-columns') }}" name="move_column_form" id="move_column_form">
-        <div>
-            {{ get_hidden_inputs(db, table) }}
-            <ul></ul>
+
+<div class="modal fade" id="moveColumnsModal" tabindex="-1" aria-labelledby="moveColumnsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="moveColumnsModalLabel">{% trans 'Move columns' %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+      </div>
+      <div class="modal-body">
+        <div id="move_columns_dialog" title="{% trans 'Move columns' %}">
+          <p>{% trans 'Move the columns by dragging them up and down.' %}</p>
+          <form action="{{ url('/table/structure/move-columns') }}" name="move_column_form" id="move_column_form">
+            <div>
+              {{ get_hidden_inputs(db, table) }}
+              <ul></ul>
+            </div>
+          </form>
         </div>
-    </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="designerModalGoButton">{% trans 'Go' %}</button>
+        <button type="button" class="btn btn-secondary" id="designerModalPreviewButton">{% trans 'Preview SQL' %}</button>
+        <button type="button" class="btn btn-secondary" id="designerModalCloseButton" data-bs-dismiss="modal">{% trans 'Close' %}</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<div class="modal fade" id="moveColumnsErrorModal" tabindex="-1" aria-labelledby="moveColumnsErrorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="moveColumnsErrorModalLabel">{% trans 'Error' %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Ok' %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {# Work on the table #}
 <div id="structure-action-links">
     {% if tbl_is_view and not db_is_system_schema %}
@@ -527,14 +562,9 @@
             {% set first_sub_partition = sub_partitions[0] %}
         {% endif %}
 
-        {% if default_sliders_state != 'disabled' %}
-        <div class="mb-3">
-          <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#partitionsCollapse" aria-expanded="{{ default_sliders_state == 'open' ? 'true' : 'false' }}" aria-controls="partitionsCollapse">
-            {% trans 'Partitions' %}
-          </button>
-        </div>
-        <div class="collapse mb-3{{ default_sliders_state == 'open' ? ' show' }}" id="partitionsCollapse">
-        {% endif %}
+        <div id="partitions-2"{% if default_sliders_state != 'disabled' -%}
+            {{- default_sliders_state == 'closed' ? ' style="display: none; overflow:auto;"' }} class="pma_auto_slider" title="{% trans 'Partitions' %}"
+        {%- endif %}>
 
         {% include 'table/structure/display_partitions.twig' with {
             'db': db,
@@ -554,9 +584,7 @@
             'table': table
         } only %}
     {% endif %}
-    {% if default_sliders_state != 'disabled' %}
     </div>
-    {% endif %}
 {% endif %}
 
 {# Displays Space usage and row statistics #}
