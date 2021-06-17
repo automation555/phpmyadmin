@@ -13,14 +13,10 @@
  * @return {false}
  **/
 function displayHelp () {
-    $('<div></div>')
-        .append(Messages.strDisplayHelp)
-        .appendTo('#page_content')
-        .dialog({
-            width: 450,
-            height: 'auto',
-            title: Messages.strHelpTitle
-        });
+    var modal = $('#helpModal');
+    modal.modal('show');
+    modal.find('.modal-body').first().html(Messages.strDisplayHelp);
+    $('#helpModalLabel').first().html(Messages.strHelpTitle);
     return false;
 }
 
@@ -279,14 +275,11 @@ AJAX.registerOnload('table/zoom_plot_jqplot.js', function () {
             return false;
         });
 
-    /**
-     ** Set dialog properties for the data display form
-     **/
-    var buttonOptions = {};
     /*
      * Handle saving of a row in the editor
      */
-    buttonOptions[Messages.strSave] = function () {
+
+    var dataPointSave = function () {
         // Find changed values by comparing form values with selectedRow Object
         var newValues = {};// Stores the values changed from original
         var sqlTypes = {};
@@ -412,21 +405,15 @@ AJAX.registerOnload('table/zoom_plot_jqplot.js', function () {
                 }
             }); // End $.post
         }// End database update
-        $('#dataDisplay').dialog('close');
     };
-    buttonOptions[Messages.strCancel] = function () {
-        $(this).dialog('close');
-    };
-    $('#dataDisplay').dialog({
-        autoOpen: false,
-        title: Messages.strDataPointContent,
-        modal: true,
-        buttons: buttonOptions,
-        width: $('#dataDisplay').width() + 80,
-        open: function () {
-            $(this).find('input[type=checkbox]').css('margin', '0.5em');
-        }
+
+    $('#dataPointSaveButton').on('click', function () {
+        dataPointSave();
     });
+
+    var modal = $('#dataPointModal');
+    $('#dataPointModalLabel').first().html(Messages.strDataPointContent);
+
     /**
      * Attach Ajax event handlers for input fields
      * in the dialog. Used to submit the Ajax
@@ -435,8 +422,8 @@ AJAX.registerOnload('table/zoom_plot_jqplot.js', function () {
     $(document).on('keydown', '#dataDisplay :input', function (e) {
         if (e.which === 13) { // 13 is the ENTER key
             e.preventDefault();
-            if (typeof buttonOptions[Messages.strSave] === 'function') {
-                buttonOptions[Messages.strSave].call();
+            if (typeof dataPointSave === 'function') {
+                dataPointSave();
             }
         }
     });
@@ -619,7 +606,7 @@ AJAX.registerOnload('table/zoom_plot_jqplot.js', function () {
                     selectedRow = data.row_info;
                 });
 
-                $('#dataDisplay').dialog('open');
+                modal.modal('show');
             }
         );
     }
