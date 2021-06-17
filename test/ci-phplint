@@ -1,0 +1,9 @@
+#!/bin/sh
+
+FILES=`find . -name '*.php' -not -path './vendor/*'`
+
+for FILE in $FILES ; do
+    if [ -f $FILE ] ; then
+        php -l $FILE
+    fi
+done
