@@ -18,7 +18,6 @@ use PhpMyAdmin\SqlParser\Statements\CreateStatement;
 use PhpMyAdmin\SqlParser\Statements\DropStatement;
 use PhpMyAdmin\SqlParser\Utils\Table as TableUtils;
 
-use function __;
 use function array_key_exists;
 use function array_map;
 use function count;
@@ -71,7 +70,7 @@ class Table
     public $type = '';
 
     /** @var array UI preferences */
-    public $uiprefs = [];
+    public $uiprefs;
 
     /** @var array errors occurred */
     public $errors = [];
@@ -533,6 +532,7 @@ class Table
     ) {
         global $dbi;
 
+        $strLength = strlen($length);
         $isTimestamp = mb_stripos($type, 'TIMESTAMP') !== false;
 
         $query = Util::backquote($name) . ' ' . $type;
@@ -544,7 +544,11 @@ class Table
         // see https://dev.mysql.com/doc/refman/5.5/en/floating-point-types.html
         $pattern = '@^(DATE|TINYBLOB|TINYTEXT|BLOB|TEXT|'
             . 'MEDIUMBLOB|MEDIUMTEXT|LONGBLOB|LONGTEXT|SERIAL|BOOLEAN|UUID|JSON)$@i';
-        if (strlen($length) !== 0 && ! preg_match($pattern, $type)) {
+        if (
+            $strLength !== 0
+            && ! preg_match($pattern, $type)
+            && Compatibility::isIntegersSupportLength($type, $length, $dbi)
+        ) {
             // Note: The variable $length here can contain several other things
             // besides length - ENUM/SET value or length of DECIMAL (eg. 12,3)
             // so we can't just convert it to integer
@@ -557,7 +561,7 @@ class Table
             if (
                 $isTimestamp
                 && stripos($attribute, 'TIMESTAMP') !== false
-                && strlen($length) !== 0
+                && $strLength !== 0
                 && $length !== 0
             ) {
                 $query .= '(' . $length . ')';
@@ -566,10 +570,10 @@ class Table
 
         // if column is virtual, check if server type is Mysql as only Mysql server
         // supports extra column properties
-        $isVirtualColMysql = $virtuality && Compatibility::isMySqlOrPerconaDb();
+        $isVirtualColMysql = $virtuality && in_array(Util::getServerType(), ['MySQL', 'Percona Server']);
         // if column is virtual, check if server type is MariaDB as MariaDB server
         // supports no extra virtual column properties except CHARACTER SET for text column types
-        $isVirtualColMariaDB = $virtuality && Compatibility::isMariaDb();
+        $isVirtualColMariaDB = $virtuality && Util::getServerType() === 'MariaDB';
 
         $matches = preg_match(
             '@^(TINYTEXT|TEXT|MEDIUMTEXT|LONGTEXT|VARCHAR|CHAR|ENUM|SET)$@i',
@@ -645,7 +649,7 @@ class Table
                         $query .= ' DEFAULT ' . $defaultType;
 
                         if (
-                            strlen($length) !== 0
+                            $strLength !== 0
                             && $length !== 0
                             && $isTimestamp
                             && $defaultType !== 'NULL' // Not to be added in case of NULL
@@ -1965,7 +1969,8 @@ class Table
         $maxRows = $GLOBALS['cfg']['Server']['MaxTableUiprefs'];
         if ($rowsCount > $maxRows) {
             $numRowsToDelete = $rowsCount - $maxRows;
-            $sqlQuery = ' DELETE FROM ' . $table .
+            $sqlQuery
+                = ' DELETE FROM ' . $table .
                 ' ORDER BY last_update ASC' .
                 ' LIMIT ' . $numRowsToDelete;
             $success = $this->dbi->tryQuery(
@@ -2571,7 +2576,8 @@ class Table
                 && ! $emptyFields
             ) {
                 if (isset($existrelForeign[$masterFieldMd5])) {
-                    $constraintName = $existrelForeign[$masterFieldMd5]['constraint'];
+                    $constraintName
+                        = $existrelForeign[$masterFieldMd5]['constraint'];
                     $onDelete = ! empty(
                         $existrelForeign[$masterFieldMd5]['on_delete']
                     )
@@ -2789,12 +2795,14 @@ class Table
      */
     public function getColumnGenerationExpression($column = null)
     {
+        $serverType = Util::getServerType();
         if (
-            Compatibility::isMySqlOrPerconaDb()
+            $serverType === 'MySQL'
             && $this->dbi->getVersion() > 50705
             && ! $GLOBALS['cfg']['Server']['DisableIS']
         ) {
-            $sql = "SELECT
+            $sql
+                = "SELECT
                 `COLUMN_NAME` AS `Field`,
                 `GENERATION_EXPRESSION` AS `Expression`
                 FROM
