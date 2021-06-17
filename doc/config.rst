@@ -196,7 +196,7 @@ Basic settings
     :default: false
 
     Setting this to ``true`` allows the user to execute queries by pressing Enter
-    instead of Ctrl+Enter. A new line can be inserted by pressing Shift+Enter.
+    instead of Ctrl+Enter. A new line can be inserted by pressing Shift + Enter.
 
     The behaviour of the console can be temporarily changed using console's
     settings interface.
@@ -673,7 +673,7 @@ Server connection settings
 
     .. code-block:: php
 
-        $cfg['Servers'][$i]['only_db'] = ['db1', 'db2'];
+        $cfg['Servers'][$i]['only_db'] = array('db1', 'db2');
 
     .. versionchanged:: 4.0.0
         Previous versions permitted to specify the display order of
@@ -1383,19 +1383,19 @@ Server connection settings
     .. code-block:: none
 
         $cfg['Servers'][$i]['AllowDeny']['order'] = 'allow,deny';
-        $cfg['Servers'][$i]['AllowDeny']['rules'] = ['allow bob from all'];
+        $cfg['Servers'][$i]['AllowDeny']['rules'] = array('allow bob from all');
         // Allow only 'bob' to connect from any host
 
         $cfg['Servers'][$i]['AllowDeny']['order'] = 'allow,deny';
-        $cfg['Servers'][$i]['AllowDeny']['rules'] = ['allow mary from 192.168.100.[50-100]'];
+        $cfg['Servers'][$i]['AllowDeny']['rules'] = array('allow mary from 192.168.100.[50-100]');
         // Allow only 'mary' to connect from host 192.168.100.50 through 192.168.100.100
 
         $cfg['Servers'][$i]['AllowDeny']['order'] = 'allow,deny';
-        $cfg['Servers'][$i]['AllowDeny']['rules'] = ['allow % from 192.168.[5-6].10'];
+        $cfg['Servers'][$i]['AllowDeny']['rules'] = array('allow % from 192.168.[5-6].10');
         // Allow any user to connect from host 192.168.5.10 or 192.168.6.10
 
         $cfg['Servers'][$i]['AllowDeny']['order'] = 'allow,deny';
-        $cfg['Servers'][$i]['AllowDeny']['rules'] = ['allow root from 192.168.5.50','allow % from 192.168.6.10'];
+        $cfg['Servers'][$i]['AllowDeny']['rules'] = array('allow root from 192.168.5.50','allow % from 192.168.6.10');
         // Allow any user to connect from 192.168.6.10, and additionally allow root to connect from 192.168.5.50
 
 .. config:option:: $cfg['Servers'][$i]['DisableIS']
@@ -1509,7 +1509,7 @@ Generic settings
     :default: true
 
     Enables check for latest versions using JavaScript on the main phpMyAdmin
-    page or by directly accessing `index.php?route=/version-check`.
+    page or by directly accessing :file:`version_check.php`.
 
     .. note::
 
@@ -1558,6 +1558,15 @@ Generic settings
 
     The maximum number of table names to be displayed in the main panel's
     list (except on the Export page).
+
+.. config:option:: $cfg['MaxRoutineList']
+
+    :type: integer
+    :default: 250
+
+    The maximum number of routine names to be displayed in the main panel's
+    routine list.
+
 
 .. config:option:: $cfg['ShowHint']
 
@@ -2100,12 +2109,10 @@ Navigation panel setup
     :type: string
     :default: ``'index.php'``
 
-    Enter the :term:`URL` where the logo in the navigation panel will point to.
+    Enter :term:`URL` where logo in the navigation panel will point to.
     For use especially with self made theme which changes this.
-    For relative/internal URLs, you need to have leading `` ./ `` or trailing characters `` ? `` such as ``'./index.php?route=/server/sql?'``.
+    For relative/internal URLs, you need to have leading `` ./ `` or trailing characters `` ? `` such as ``'./sql.php?'``.
     For external URLs, you should include URL protocol schemes (``http`` or ``https``) with absolute URLs.
-
-    You may want to make the link open in a new browser tab, for that you need to use :config:option:`$cfg['NavigationLogoLinkWindow']`
 
 .. config:option:: $cfg['NavigationLogoLinkWindow']
 
@@ -2115,9 +2122,6 @@ Navigation panel setup
     Whether to open the linked page in the main window (``main``) or in a
     new one (``new``). Note: use ``new`` if you are linking to
     ``phpmyadmin.net``.
-
-    To open the link in the main window you will need to add the value of :config:option:`$cfg['NavigationLogoLink']`
-    to :config:option:`$cfg['CSPAllow']` because of the :term:`Content Security Policy` header.
 
 .. config:option:: $cfg['NavigationTreeDisplayItemFilterMinimum']
 
@@ -2815,7 +2819,7 @@ Web server settings
 
     .. code-block:: php
 
-        $cfg['TrustedProxies'] = ['1.2.3.4' => 'HTTP_X_FORWARDED_FOR'];
+        $cfg['TrustedProxies'] = array('1.2.3.4' => 'HTTP_X_FORWARDED_FOR');
 
     The :config:option:`$cfg['Servers'][$i]['AllowDeny']['rules']` directive uses the
     client's IP address as usual.
@@ -2862,7 +2866,7 @@ Web server settings
 
     This can be useful when you want to include some external JavaScript files
     in :file:`config.footer.inc.php` or :file:`config.header.inc.php`, which
-    would be normally not allowed by :term:`Content Security Policy`.
+    would be normally not allowed by Content Security Policy.
 
     To allow some sites, just list them within the string:
 
@@ -3504,7 +3508,7 @@ Console settings
     :type: boolean
     :default: false
 
-    Execute queries on Enter and insert new line with Shift+Enter
+    Execute queries on Enter and insert new line with Shift + Enter
 
 .. config:option:: $cfg['Console']['DarkTheme']
 
@@ -3549,7 +3553,7 @@ Developer
 .. config:option:: $cfg['DBG']
 
     :type: array
-    :default: []
+    :default: array(...)
 
 .. config:option:: $cfg['DBG']['sql']
 
