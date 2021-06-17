@@ -1,4 +1,5 @@
 /* global firstDayOfCalendar */ // templates/javascript/variables.twig
+/* global isStorageSupported */ // js/config.js
 
 /**
  * Create advanced table (resize, reorder, and show/hide columns; and also grid editing).
@@ -233,17 +234,76 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
         },
 
         /**
+         * Get data from localstorage or Cookies
+         *
+         * @param key the key to get data from
+         * @return {number} the data corresponding to the saved key
+         */
+        getStorageData: function (key) {
+            var data;
+            if (isStorageSupported('localStorage')) {
+                data = window.localStorage.getItem(key);
+            } else {
+                data = Cookies.get(key);
+            }
+            return data;
+        },
+
+        /**
          * Resize column n to new width "nw"
          *
          * @param n zero-based column index
          * @param nw new width of the column in pixel
          */
         resize: function (n, nw) {
+            g.storeColumnWidth(n, nw);
             $(g.t).find('tr').each(function () {
                 $(this).find('th.draggable:visible').eq(n).find('span')
                     .add($(this).find('td:visible').eq(g.actionSpan + n).find('span'))
                     .css('width', nw);
             });
+        },
+
+        /**
+         * Get saved column width and resize the columns
+         */
+        restoreColumnWidth: function () {
+            var key   = g.db + '_' + g.table + '_column_width';
+            var table = $('.pma_table').eq(0).find('th');
+            var data = g.getStorageData(key);
+            var i; var nw;
+
+            if (table.length === 1 || data === null) {
+                return;
+            }
+
+            data = JSON.parse(data);
+            for (i = 0; i < table.length; i++) {
+                var column = table[i];
+
+                if (column === undefined) {
+                    return;
+                }
+
+                nw = data[column.dataset.column];
+
+                if (nw === undefined) {
+                    continue;
+                }
+
+                $('.pma_table tr').find('th').each(function (e) {
+                    if (e === i) {
+                        this.getElementsByTagName('span')[0].style.width = nw + 'px';
+                    }
+                });
+
+
+                $('.pma_table').find('tr').each(function () {
+                    if (this.getElementsByTagName('td')[i + 3] !== undefined) {
+                        this.getElementsByTagName('td')[i + 3].children[0].style.width = nw + 'px';
+                    }
+                });
+            }
         },
 
         /**
@@ -317,6 +377,35 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
                 tmp = g.colVisib[oldn];
                 g.colVisib.splice(oldn, 1);
                 g.colVisib.splice(newn, 0, tmp);
+            }
+        },
+
+        /**
+         * Store the column width
+         *
+         * @param n zero-based column index
+         * @param nw new width of the column in pixel
+         */
+        storeColumnWidth: function (n, nw) {
+            var key   = g.db + '_' + g.table + '_column_width';
+            var name = $('.pma_table').eq(0).find('th').eq(n + 1)[0].dataset.column;
+            var value;
+
+            var data = g.getStorageData(key);
+
+            if (data === null) {
+                var obj = { name:nw };
+                value = JSON.stringify(obj);
+            } else {
+                data = JSON.parse(data);
+                data[name] = nw;
+                value = JSON.stringify(data);
+            }
+
+            if (isStorageSupported('localStorage')) {
+                window.localStorage.setItem(key, value);
+            } else {
+                Cookies.set(key, value);
             }
         },
 
@@ -687,16 +776,14 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
                         var newHtml = Functions.escapeHtml(value);
                         newHtml = newHtml.replace(/\n/g, '<br>\n');
 
-                        var decimals = parseInt($thisField.attr('data-decimals'));
-
                         // remove decimal places if column type not supported
-                        if ((decimals === 0) && ($thisField.attr('data-type').indexOf('time') !== -1)) {
+                        if (($thisField.attr('data-decimals') === 0) && ($thisField.attr('data-type').indexOf('time') !== -1)) {
                             newHtml = newHtml.substring(0, newHtml.indexOf('.'));
                         }
 
-                        // remove additional decimal places
-                        if ((decimals > 0) && ($thisField.attr('data-type').indexOf('time') !== -1)) {
-                            newHtml = newHtml.substring(0, newHtml.length - (6 - decimals));
+                        // remove addtional decimal places
+                        if (($thisField.attr('data-decimals') > 0) && ($thisField.attr('data-type').indexOf('time') !== -1)) {
+                            newHtml = newHtml.substring(0, newHtml.length - (6 - $thisField.attr('data-decimals')));
                         }
 
                         var selector = 'span';
@@ -804,7 +891,7 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
                 g.wasEditedCellNull = false;
                 if ($td.is(':not(.not_null)')) {
                     // append a null checkbox
-                    $editArea.append('<div class="null_div"><label>NULL:<input type="checkbox"></label></div>');
+                    $editArea.append('<div class="null_div"><label>Null:<input type="checkbox"></label></div>');
 
                     var $checkbox = $editArea.find('.null_div input');
                     // check if current <td> is NULL
@@ -1244,7 +1331,11 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
                             fieldsType.push('hex');
                         }
                         fieldsNull.push('');
-                        fields.push($thisField.data('value'));
+                        // Convert \n to \r\n to be consistent with form submitted value.
+                        // The internal browser representation has to be just \n
+                        // while form submitted value \r\n, see specification:
+                        // https://www.w3.org/TR/html5/forms.html#the-textarea-element
+                        fields.push($thisField.data('value').replace(/\n/g, '\r\n'));
 
                         var cellIndex = $thisField.index('.to_be_saved');
                         if ($thisField.is(':not(.relation, .enum, .set, .bit)')) {
@@ -2058,6 +2149,13 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
                             // start grid-editing
                             startGridEditing(e, this);
                         }
+                    } else {// If it is not a link or it is a double tap then call startGridEditing
+                        // this is a double click, cancel the single click timer
+                        // and make the click count 0
+                        clearTimeout($cell.data('timer'));
+                        $cell.data('clicks', 0);
+                        // start grid-editing
+                        startGridEditing(e, this);
                     }
                 })
                 .on('dblclick', function (e) {
@@ -2208,6 +2306,8 @@ var makeGrid = function (t, enableResize, enableReorder, enableVisib, enableGrid
     // link the global div
     $(t).before(g.gDiv);
     $(g.gDiv).append(t);
+
+    g.restoreColumnWidth();
 
     // FEATURES
     if (isResizeEnabled) {
