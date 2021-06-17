@@ -18,8 +18,8 @@
 
     {% if action == url('/table/create') %}
         <div id="table_name_col_no_outer">
-            <table id="table_name_col_no" class="table table-borderless tdblock">
-                <tr class="align-middle float-start">
+            <table id="table_name_col_no" class="pma-table tdblock">
+                <tr class="vmiddle floatleft">
                     <td>{% trans 'Table name' %}:
                     <input type="text"
                         name="table"
@@ -52,11 +52,12 @@
             'fields_meta': fields_meta,
             'mimework': mimework,
             'content_cells': content_cells,
+            'default_functions' : default_functions,
             'change_column': change_column,
             'is_virtual_columns_supported': is_virtual_columns_supported,
             'server_version' : server_version,
             'browse_mime': browse_mime,
-            'supports_stored_keyword': supports_stored_keyword,
+            'server_type': server_type,
             'max_rows': max_rows,
             'char_editing': char_editing,
             'attribute_types': attribute_types,
@@ -67,8 +68,8 @@
     {% endif %}
     {% if action == url('/table/create') %}
         <div class="responsivetable">
-        <table class="table table-borderless w-auto align-middle mb-0">
-            <tr class="align-top">
+        <table class="pma-table">
+            <tr class="vtop">
                 <th>{% trans 'Table comments:' %}</th>
                 <td width="25">&nbsp;</td>
                 <th>{% trans 'Collation:' %}</th>
@@ -78,7 +79,7 @@
                     {{ show_mysql_docu('Storage_engines') }}
                 </th>
                 <td width="25">&nbsp;</td>
-                <th id="storage-engine-connection">
+                <th>
                     {% trans 'Connection:' %}
                     {{ show_mysql_docu('federated-create-connection') }}
                 </th>
@@ -131,7 +132,7 @@
                 </td>
             </tr>
             {% if have_partitioning %}
-                <tr class="align-top">
+                <tr class="vtop">
                     <th colspan="5">
                         {% trans 'PARTITION definition:' %}
                         {{ show_mysql_docu('Partitioning') }}
@@ -149,8 +150,8 @@
         </table>
         </div>
     {% endif %}
-    <fieldset class="pma-fieldset tblFooters">
-        {% if action == url('/table/add-field') or action == url('/table/structure/save') %}
+    <fieldset class="tblFooters">
+        {% if action == url('/table/add-field') %}
             <input type="checkbox" name="online_transaction" value="ONLINE_TRANSACTION_ENABLED" />{% trans %}Online transaction{% context %}Online transaction part of the SQL DDL for InnoDB{% endtrans %}{{ show_mysql_docu('innodb-online-ddl') }}
         {% endif %}
         <input class="btn btn-secondary preview_sql" type="button"

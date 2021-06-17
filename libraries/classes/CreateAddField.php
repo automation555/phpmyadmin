@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PhpMyAdmin;
 
 use PhpMyAdmin\Html\Generator;
-
 use function array_merge;
 use function count;
 use function implode;
@@ -90,6 +89,7 @@ class CreateAddField
                         $_POST['field_null'][$i] ?? 'NO',
                         $_POST['field_default_type'][$i],
                         $_POST['field_default_value'][$i],
+                        $_POST['field_default_function'][$i],
                         $_POST['field_extra'][$i] ?? false,
                         $_POST['field_comments'][$i] ?? '',
                         $_POST['field_virtuality'][$i] ?? '',
@@ -138,15 +138,14 @@ class CreateAddField
                 $sqlSuffix .= ' AFTER '
                         . Util::backquote($_POST['after_field']);
             }
-
-            return $sqlSuffix;
+        } else {
+            $sqlSuffix .= ' AFTER '
+                    . Util::backquote(
+                        $_POST['field_name'][$previousField]
+                    );
         }
 
-        return $sqlSuffix
-                . ' AFTER '
-                . Util::backquote(
-                    $_POST['field_name'][$previousField]
-                );
+        return $sqlSuffix;
     }
 
     /**
@@ -199,8 +198,7 @@ class CreateAddField
 
         // specifying index type is allowed only for primary, unique and index only
         $type = $index['Index_type'];
-        if (
-            $index['Index_choice'] !== 'SPATIAL'
+        if ($index['Index_choice'] !== 'SPATIAL'
             && $index['Index_choice'] !== 'FULLTEXT'
             && in_array($type, Index::getIndexTypes())
         ) {
@@ -350,8 +348,7 @@ class CreateAddField
     public function getPartitionsDefinition(): string
     {
         $sqlQuery = '';
-        if (
-            ! empty($_POST['partition_by'])
+        if (! empty($_POST['partition_by'])
             && ! empty($_POST['partition_expr'])
             && ! empty($_POST['partition_count'])
             && $_POST['partition_count'] > 1
@@ -361,8 +358,7 @@ class CreateAddField
                 . ' PARTITIONS ' . $_POST['partition_count'];
         }
 
-        if (
-            ! empty($_POST['subpartition_by'])
+        if (! empty($_POST['subpartition_by'])
             && ! empty($_POST['subpartition_expr'])
             && ! empty($_POST['subpartition_count'])
             && $_POST['subpartition_count'] > 1
@@ -377,7 +373,6 @@ class CreateAddField
             foreach ($_POST['partitions'] as $partition) {
                 $partitions[] = $this->getPartitionDefinition($partition);
             }
-
             $sqlQuery .= ' (' . implode(', ', $partitions) . ')';
         }
 
@@ -410,31 +405,24 @@ class CreateAddField
         if (! empty($partition['engine'])) {
             $sqlQuery .= ' ENGINE = ' . $partition['engine'];
         }
-
         if (! empty($partition['comment'])) {
             $sqlQuery .= " COMMENT = '" . $partition['comment'] . "'";
         }
-
         if (! empty($partition['data_directory'])) {
             $sqlQuery .= " DATA DIRECTORY = '" . $partition['data_directory'] . "'";
         }
-
         if (! empty($partition['index_directory'])) {
             $sqlQuery .= " INDEX_DIRECTORY = '" . $partition['index_directory'] . "'";
         }
-
         if (! empty($partition['max_rows'])) {
             $sqlQuery .= ' MAX_ROWS = ' . $partition['max_rows'];
         }
-
         if (! empty($partition['min_rows'])) {
             $sqlQuery .= ' MIN_ROWS = ' . $partition['min_rows'];
         }
-
         if (! empty($partition['tablespace'])) {
             $sqlQuery .= ' TABLESPACE = ' . $partition['tablespace'];
         }
-
         if (! empty($partition['node_group'])) {
             $sqlQuery .= ' NODEGROUP = ' . $partition['node_group'];
         }
@@ -447,7 +435,6 @@ class CreateAddField
                     true
                 );
             }
-
             $sqlQuery .= ' (' . implode(', ', $subpartitions) . ')';
         }
 
@@ -470,31 +457,25 @@ class CreateAddField
             . Util::backquote(trim($table)) . ' (' . $sqlStatement . ')';
 
         // Adds table type, character set, comments and partition definition
-        if (
-            ! empty($_POST['tbl_storage_engine'])
+        if (! empty($_POST['tbl_storage_engine'])
             && ($_POST['tbl_storage_engine'] !== 'Default')
         ) {
             $sqlQuery .= ' ENGINE = ' . $this->dbi->escapeString($_POST['tbl_storage_engine']);
         }
-
         if (! empty($_POST['tbl_collation'])) {
             $sqlQuery .= Util::getCharsetQueryPart($_POST['tbl_collation'] ?? '');
         }
-
-        if (
-            ! empty($_POST['connection'])
+        if (! empty($_POST['connection'])
             && ! empty($_POST['tbl_storage_engine'])
             && $_POST['tbl_storage_engine'] === 'FEDERATED'
         ) {
             $sqlQuery .= " CONNECTION = '"
                 . $this->dbi->escapeString($_POST['connection']) . "'";
         }
-
         if (! empty($_POST['comment'])) {
             $sqlQuery .= ' COMMENT = \''
                 . $this->dbi->escapeString($_POST['comment']) . '\'';
         }
-
         $sqlQuery .= $this->getPartitionsDefinition();
         $sqlQuery .= ';';
 
@@ -513,8 +494,7 @@ class CreateAddField
             $numberOfFields = intval($_POST['orig_num_fields']) + intval($_POST['added_fields']);
         } elseif (isset($_POST['orig_num_fields'])) { // retaining existing fields
             $numberOfFields = intval($_POST['orig_num_fields']);
-        } elseif (
-            isset($_POST['num_fields'])
+        } elseif (isset($_POST['num_fields'])
             && intval($_POST['num_fields']) > 0
         ) { // new table with specified number of fields
             $numberOfFields = intval($_POST['num_fields']);
@@ -526,39 +506,22 @@ class CreateAddField
     }
 
     /**
-     * Function to get the column creation statement
-     *
-     * @param string $table current table
-     */
-    public function getColumnCreationQuery(
-        string $table
-    ): string {
-        // get column addition statements
-        $sqlStatement = $this->getColumnCreationStatements(false);
-
-        $sqlQuery = 'ALTER TABLE ' .
-            Util::backquote($table) . ' ' . $sqlStatement;
-        if (isset($_POST['online_transaction'])) {
-            $sqlQuery .= ', ALGORITHM=INPLACE, LOCK=NONE';
-        }
-
-        return $sqlQuery . ';';
-    }
-
-    /**
      * Function to execute the column creation statement
      *
      * @param string $db       current database
-     * @param string $sqlQuery the query to run
+     * @param string $table    current table
      * @param string $errorUrl error page url
      *
      * @return array
      */
     public function tryColumnCreationQuery(
         string $db,
-        string $sqlQuery,
+        string $table,
         string $errorUrl
     ): array {
+        // get column addition statements
+        $sqlStatement = $this->getColumnCreationStatements(false);
+
         // To allow replication, we first select the db to use and then run queries
         // on this db.
         if (! $this->dbi->selectDb($db)) {
@@ -568,6 +531,20 @@ class CreateAddField
                 false,
                 $errorUrl
             );
+        }
+
+        $sqlQuery = 'ALTER TABLE ' .
+            Util::backquote($table) . ' ' . $sqlStatement;
+        if (isset($_POST['online_transaction'])) {
+            $sqlQuery .= ', ALGORITHM=INPLACE, LOCK=NONE';
+        }
+        $sqlQuery .= ';';
+
+        // If there is a request for SQL previewing.
+        if (isset($_POST['preview_sql'])) {
+            Core::previewSQL($sqlQuery);
+
+            exit;
         }
 
         return [
