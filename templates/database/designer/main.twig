@@ -18,18 +18,18 @@ var designerConfig = {{ designer_config|raw }};
     <a class="M_butt" id="key_Show_left_menu" href="#">
         <img title="{% trans 'Show/Hide tables list' %}"
              alt="v"
-             src="{{ image('designer/downarrow2_m.png') }}"
-             data-down="{{ image('designer/downarrow2_m.png') }}"
-             data-up="{{ image('designer/uparrow2_m.png') }}">
+             src="{{ theme.getImgPath('designer/downarrow2_m.png') }}"
+             data-down="{{ theme.getImgPath('designer/downarrow2_m.png') }}"
+             data-up="{{ theme.getImgPath('designer/uparrow2_m.png') }}">
         <span class="hide hidable">
             {% trans 'Show/Hide tables list' %}
         </span>
     </a>
     <a href="#" id="toggleFullscreen" class="M_butt">
         <img title="{% trans 'View in fullscreen' %}"
-             src="{{ image('designer/viewInFullscreen.png') }}"
-             data-enter="{{ image('designer/viewInFullscreen.png') }}"
-             data-exit="{{ image('designer/exitFullscreen.png') }}">
+             src="{{ theme.getImgPath('designer/viewInFullscreen.png') }}"
+             data-enter="{{ theme.getImgPath('designer/viewInFullscreen.png') }}"
+             data-exit="{{ theme.getImgPath('designer/exitFullscreen.png') }}">
         <span class="hide hidable"
               data-exit="{% trans 'Exit fullscreen' %}"
               data-enter="{% trans 'View in fullscreen' %}">
@@ -38,7 +38,7 @@ var designerConfig = {{ designer_config|raw }};
     </a>
     <a href="#" id="addOtherDbTables" class="M_butt">
         <img title="{% trans 'Add tables from other databases' %}"
-             src="{{ image('designer/other_table.png') }}">
+             src="{{ theme.getImgPath('designer/other_table.png') }}">
         <span class="hide hidable">
             {% trans 'Add tables from other databases' %}
         </span>
@@ -47,70 +47,72 @@ var designerConfig = {{ designer_config|raw }};
         <a id="newPage" href="#" class="M_butt">
             <img title="{% trans 'New page' %}"
                  alt=""
-                 src="{{ image('designer/page_add.png') }}">
+                 src="{{ theme.getImgPath('designer/page_add.png') }}">
             <span class="hide hidable">
                 {% trans 'New page' %}
             </span>
         </a>
         <a href="#" id="editPage" class="M_butt ajax">
             <img title="{% trans 'Open page' %}"
-                 src="{{ image('designer/page_edit.png') }}">
+                 src="{{ theme.getImgPath('designer/page_edit.png') }}">
             <span class="hide hidable">
                 {% trans 'Open page' %}
             </span>
         </a>
         <a href="#" id="savePos" class="M_butt">
             <img title="{% trans 'Save page' %}"
-                 src="{{ image('designer/save.png') }}">
+                 src="{{ theme.getImgPath('designer/save.png') }}">
             <span class="hide hidable">
                 {% trans 'Save page' %}
             </span>
         </a>
         <a href="#" id="SaveAs" class="M_butt ajax">
             <img title="{% trans 'Save page as' %}"
-                 src="{{ image('designer/save_as.png') }}">
+                 src="{{ theme.getImgPath('designer/save_as.png') }}">
             <span class="hide hidable">
                 {% trans 'Save page as' %}
             </span>
         </a>
         <a href="#" id="delPages" class="M_butt ajax">
             <img title="{% trans 'Delete pages' %}"
-                 src="{{ image('designer/page_delete.png') }}">
+                 src="{{ theme.getImgPath('designer/page_delete.png') }}">
             <span class="hide hidable">
                 {% trans 'Delete pages' %}
             </span>
         </a>
         <a href="#" id="StartTableNew" class="M_butt">
             <img title="{% trans 'Create table' %}"
-                 src="{{ image('designer/table.png') }}">
+                 src="{{ theme.getImgPath('designer/table.png') }}">
             <span class="hide hidable">
                 {% trans 'Create table' %}
             </span>
         </a>
         <a href="#" class="M_butt" id="rel_button">
             <img title="{% trans 'Create relationship' %}"
-                 src="{{ image('designer/relation.png') }}">
+                 src="{{ theme.getImgPath('designer/relation.png') }}">
             <span class="hide hidable">
                 {% trans 'Create relationship' %}
             </span>
         </a>
         <a href="#" class="M_butt" id="display_field_button">
             <img title="{% trans 'Choose column to display' %}"
-                 src="{{ image('designer/display_field.png') }}">
+                 src="{{ theme.getImgPath('designer/display_field.png') }}">
             <span class="hide hidable">
                 {% trans 'Choose column to display' %}
             </span>
         </a>
         <a href="#" id="reloadPage" class="M_butt">
             <img title="{% trans 'Reload' %}"
-                 src="{{ image('designer/reload.png') }}">
+                 src="{{ theme.getImgPath('designer/reload.png') }}">
             <span class="hide hidable">
                 {% trans 'Reload' %}
             </span>
         </a>
-        <a href="{{ get_docu_link('faq', 'faq6-31') }}" target="_blank" rel="noopener noreferrer" class="M_butt">
+        <a href="{{ get_docu_link('faq', 'faq6-31') }}"
+           target="documentation"
+           class="M_butt">
             <img title="{% trans 'Help' %}"
-                 src="{{ image('designer/help.png') }}">
+                 src="{{ theme.getImgPath('designer/help.png') }}">
             <span class="hide hidable">
                 {% trans 'Help' %}
             </span>
@@ -118,13 +120,13 @@ var designerConfig = {{ designer_config|raw }};
     {% endif %}
     <a href="#" class="{{ params_array['angular_direct'] }}" id="angular_direct_button">
         <img title="{% trans 'Angular links' %} / {% trans 'Direct links' %}"
-             src="{{ image('designer/ang_direct.png') }}">
+             src="{{ theme.getImgPath('designer/ang_direct.png') }}">
         <span class="hide hidable">
             {% trans 'Angular links' %} / {% trans 'Direct links' %}
         </span>
     </a>
     <a href="#" class="{{ params_array['snap_to_grid'] }}" id="grid_button">
-        <img title="{% trans 'Snap to grid' %}" src="{{ image('designer/grid.png') }}">
+        <img title="{% trans 'Snap to grid' %}" src="{{ theme.getImgPath('designer/grid.png') }}">
         <span class="hide hidable">
             {% trans 'Snap to grid' %}
         </span>
@@ -132,23 +134,23 @@ var designerConfig = {{ designer_config|raw }};
     <a href="#" class="{{ params_array['small_big_all'] }}" id="key_SB_all">
         <img title="{% trans 'Small/Big All' %}"
              alt="v"
-             src="{{ image('designer/downarrow1.png') }}"
-             data-down="{{ image('designer/downarrow1.png') }}"
-             data-right="{{ image('designer/rightarrow1.png') }}">
+             src="{{ theme.getImgPath('designer/downarrow1.png') }}"
+             data-down="{{ theme.getImgPath('designer/downarrow1.png') }}"
+             data-right="{{ theme.getImgPath('designer/rightarrow1.png') }}">
         <span class="hide hidable">
             {% trans 'Small/Big All' %}
         </span>
     </a>
     <a href="#" id="SmallTabInvert" class="M_butt">
         <img title="{% trans 'Toggle small/big' %}"
-             src="{{ image('designer/bottom.png') }}">
+             src="{{ theme.getImgPath('designer/bottom.png') }}">
         <span class="hide hidable">
             {% trans 'Toggle small/big' %}
         </span>
     </a>
     <a href="#" id="relLineInvert" class="{{ params_array['relation_lines'] }}" >
         <img title="{% trans 'Toggle relationship lines' %}"
-             src="{{ image('designer/toggle_lines.png') }}">
+             src="{{ theme.getImgPath('designer/toggle_lines.png') }}">
         <span class="hide hidable">
             {% trans 'Toggle relationship lines' %}
         </span>
@@ -156,7 +158,7 @@ var designerConfig = {{ designer_config|raw }};
     {% if not visual_builder %}
         <a href="#" id="exportPages" class="M_butt" >
             <img title="{% trans 'Export schema' %}"
-                 src="{{ image('designer/export.png') }}">
+                 src="{{ theme.getImgPath('designer/export.png') }}">
             <span class="hide hidable">
                 {% trans 'Export schema' %}
             </span>
@@ -167,7 +169,7 @@ var designerConfig = {{ designer_config|raw }};
            href="#"
            class="M_butt">
             <img title="{% trans 'Build Query' %}"
-                 src="{{ image('designer/query_builder.png') }}">
+                 src="{{ theme.getImgPath('designer/query_builder.png') }}">
             <span class="hide hidable">
                 {% trans 'Build Query' %}
             </span>
@@ -175,8 +177,8 @@ var designerConfig = {{ designer_config|raw }};
     {% endif %}
     <a href="#" class="{{ params_array['side_menu'] }}" id="key_Left_Right">
         <img title="{% trans 'Move Menu' %}" alt=">"
-             data-right="{{ image('designer/2leftarrow_m.png') }}"
-             src="{{ image('designer/2rightarrow_m.png') }}">
+             data-right="{{ theme.getImgPath('designer/2leftarrow_m.png') }}"
+             src="{{ theme.getImgPath('designer/2rightarrow_m.png') }}">
         <span class="hide hidable">
             {% trans 'Move Menu' %}
         </span>
@@ -184,8 +186,8 @@ var designerConfig = {{ designer_config|raw }};
     <a href="#" class="{{ params_array['pin_text'] }}" id="pin_Text">
         <img title="{% trans 'Pin text' %}"
              alt=">"
-             data-right="{{ image('designer/anchor.png') }}"
-             src="{{ image('designer/anchor.png') }}">
+             data-right="{{ theme.getImgPath('designer/anchor.png') }}"
+             src="{{ theme.getImgPath('designer/anchor.png') }}">
         <span class="hide hidable">
             {% trans 'Pin text' %}
         </span>
@@ -202,37 +204,36 @@ var designerConfig = {{ designer_config|raw }};
                     <img title="{% trans 'Hide/Show all' %}"
                         alt="v"
                         id="key_HS_all"
-                        src="{{ image('designer/downarrow1.png') }}"
-                        data-down="{{ image('designer/downarrow1.png') }}"
-                        data-right="{{ image('designer/rightarrow1.png') }}">
+                        src="{{ theme.getImgPath('designer/downarrow1.png') }}"
+                        data-down="{{ theme.getImgPath('designer/downarrow1.png') }}"
+                        data-right="{{ theme.getImgPath('designer/rightarrow1.png') }}">
                 </a>
                 <a href="#" class="M_butt" target="_self" >
                     <img alt="v"
                         id="key_HS"
                         title="{% trans 'Hide/Show tables with no relationship' %}"
-                        src="{{ image('designer/downarrow2.png') }}"
-                        data-down="{{ image('designer/downarrow2.png') }}"
-                        data-right="{{ image('designer/rightarrow2.png') }}">
+                        src="{{ theme.getImgPath('designer/downarrow2.png') }}"
+                        data-down="{{ theme.getImgPath('designer/downarrow2.png') }}"
+                        data-right="{{ theme.getImgPath('designer/rightarrow2.png') }}">
                 </a>
             </div>
             <div id="id_scroll_tab" class="scroll_tab">
-                <table class="table table-sm ps-1"></table>
+                <table class="pma-table" width="100%" style="padding-left: 3px;"></table>
             </div>
             {# end id_scroll_tab #}
             <div class="text-center">
                 {% trans 'Number of tables:' %} <span id="tables_counter">0</span>
             </div>
             <div id="layer_menu_sizer">
-                  <img class="icon float-start"
+                  <img class="icon floatleft"
                       id="layer_menu_sizer_btn"
-                      data-right="{{ image('designer/resizeright.png') }}"
-                      src="{{ image('designer/resize.png') }}">
+                      data-right="{{ theme.getImgPath('designer/resizeright.png') }}"
+                      src="{{ theme.getImgPath('designer/resize.png') }}">
             </div>
         </div>
         {# end layer_menu #}
         {% include 'database/designer/database_tables.twig' with {
             'db': db,
-            'text_dir': text_dir,
             'get_db': get_db,
             'has_query': has_query,
             'tab_pos': tab_pos,
@@ -242,12 +243,13 @@ var designerConfig = {{ designer_config|raw }};
             'tables_pk_or_unique_keys': tables_pk_or_unique_keys,
             'columns_type': columns_type,
             'tables': designerTables,
+            'theme': theme,
         } only %}
     </form>
 </div>
 <div id="designer_hint"></div>
 {# create relation pane #}
-<table id="layer_new_relation" class="table table-borderless w-auto hide">
+<table id="layer_new_relation" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
     <tbody>
         <tr>
             <td class="frams1" width="10px">
@@ -262,11 +264,11 @@ var designerConfig = {{ designer_config|raw }};
         <tr>
             <td class="frams8">
             </td>
-            <td class="input_tab p-0">
-                <table class="table table-borderless bg-white mb-0 text-center">
+            <td class="input_tab">
+                <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
                     <thead>
                         <tr>
-                            <td colspan="2" class="text-center text-nowrap">
+                            <td colspan="2" class="text-center nowrap">
                                 <strong>
                                     {% trans 'Create relationship' %}
                                 </strong>
@@ -275,14 +277,14 @@ var designerConfig = {{ designer_config|raw }};
                     </thead>
                     <tbody id="foreign_relation">
                         <tr>
-                            <td colspan="2" class="text-center text-nowrap">
+                            <td colspan="2" class="text-center nowrap">
                                 <strong>
                                     FOREIGN KEY
                                 </strong>
                             </td>
                         </tr>
                         <tr>
-                            <td width="58" class="text-nowrap">
+                            <td width="58" class="nowrap">
                                 on delete
                             </td>
                             <td width="102">
@@ -306,7 +308,7 @@ var designerConfig = {{ designer_config|raw }};
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-nowrap">
+                            <td class="nowrap">
                                 on update
                             </td>
                             <td>
@@ -332,7 +334,7 @@ var designerConfig = {{ designer_config|raw }};
                     </tbody>
                     <tbody>
                         <tr>
-                            <td colspan="2" class="text-center text-nowrap">
+                            <td colspan="2" class="text-center nowrap">
                                 <input type="button" id="ok_new_rel_panel" class="btn btn-secondary butt"
                                     name="Button" value="{% trans 'OK' %}">
                                 <input type="button" id="cancel_new_rel_panel"
@@ -357,8 +359,62 @@ var designerConfig = {{ designer_config|raw }};
         </tr>
     </tbody>
 </table>
+{# confirm relation creation #}
+<table id="layer_cnfrm_relation" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
+  <tbody>
+  <tr>
+    <td class="frams1" width="10px">
+    </td>
+    <td class="frams5" width="99%" >
+    </td>
+    <td class="frams2" width="10px">
+      <div class="bor">
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td class="frams8">
+    </td>
+    <td class="input_tab">
+      <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
+        <thead>
+        <tr>
+          <td colspan="2" class="text-center nowrap">
+            <strong>
+              {% trans 'The data types are not same, do you want to continue?' %}
+            </strong>
+          </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td colspan="2" class="text-center nowrap">
+            <input type="button" id="cnfrm_rel" class="btn btn-secondary butt"
+                   name="Button" value="{% trans 'OK' %}">
+            <input type="button" id="cancel_rel"
+                   class="btn btn-secondary butt" name="Button" value="{% trans 'Cancel' %}">
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </td>
+    <td class="frams6">
+    </td>
+  </tr>
+  <tr>
+    <td class="frams4">
+      <div class="bor">
+      </div>
+    </td>
+    <td class="frams7">
+    </td>
+    <td class="frams3">
+    </td>
+  </tr>
+  </tbody>
+</table>
 {# delete relation pane #}
-<table id="layer_upd_relation" class="table table-borderless w-auto hide">
+<table id="layer_upd_relation" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
     <tbody>
         <tr>
             <td class="frams1" width="10px">
@@ -373,17 +429,17 @@ var designerConfig = {{ designer_config|raw }};
         <tr>
             <td class="frams8">
             </td>
-            <td class="input_tab p-0">
-                <table class="table table-borderless bg-white mb-0 text-center">
+            <td class="input_tab">
+                <table width="100%" class="pma-table text-center" cellpadding="2" cellspacing="0">
                     <tr>
-                        <td colspan="3" class="text-center text-nowrap">
+                        <td colspan="3" class="text-center nowrap">
                             <strong>
                                 {% trans 'Delete relationship' %}
                             </strong>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="text-center text-nowrap">
+                        <td colspan="3" class="text-center nowrap">
                             <input id="del_button" name="Button" type="button"
                                 class="btn btn-secondary butt" value="{% trans 'Delete' %}">
                             <input id="cancel_button" type="button" class="btn btn-secondary butt"
@@ -409,7 +465,7 @@ var designerConfig = {{ designer_config|raw }};
 </table>
 {% if has_query %}
     {# options panel #}
-    <table id="designer_optionse" class="table table-borderless w-auto hide">
+    <table id="designer_optionse" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td class="frams1" width="10px">
@@ -424,24 +480,24 @@ var designerConfig = {{ designer_config|raw }};
             <tr>
                 <td class="frams8">
                 </td>
-                <td class="input_tab p-0">
-                    <table class="table table-borderless bg-white mb-0 text-center">
+                <td class="input_tab">
+                    <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
                         <thead>
                             <tr>
-                                <td colspan="2" rowspan="2" id="option_col_name" class="text-center text-nowrap">
+                                <td colspan="2" rowspan="2" id="option_col_name" class="text-center nowrap">
                                 </td>
                             </tr>
                         </thead>
                         <tbody id="where">
                             <tr>
-                                <td class="text-center text-nowrap">
+                                <td class="text-center nowrap">
                                     <b>
                                         WHERE
                                     </b>
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Relationship operator' %}
                                 </td>
                                 <td width="102">
@@ -480,7 +536,7 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-nowrap">
+                                <td class="nowrap">
                                     {% trans 'Value' %}
                                     <br>
                                     {% trans 'subquery' %}
@@ -490,14 +546,14 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center text-nowrap">
+                                <td class="text-center nowrap">
                                     <b>
                                         {% trans 'Rename to' %}
                                     </b>
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'New name' %}
                                 </td>
                                 <td width="102">
@@ -505,14 +561,14 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center text-nowrap">
+                                <td class="text-center nowrap">
                                     <b>
                                         {% trans 'Aggregate' %}
                                     </b>
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Operator' %}
                                 </td>
                                 <td width="102">
@@ -539,7 +595,7 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-center text-nowrap">
+                                <td width="58" class="text-center nowrap">
                                     <b>
                                         GROUP BY
                                     </b>
@@ -549,7 +605,7 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-center text-nowrap">
+                                <td width="58" class="text-center nowrap">
                                     <b>
                                         ORDER BY
                                     </b>
@@ -569,14 +625,14 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center text-nowrap">
+                                <td class="text-center nowrap">
                                     <b>
                                         HAVING
                                     </b>
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Operator' %}
                                 </td>
                                 <td width="102">
@@ -606,7 +662,7 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Relationship operator' %}
                                 </td>
                                 <td width="102">
@@ -645,7 +701,7 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Value' %}
                                     <br>
                                     {% trans 'subquery' %}
@@ -657,7 +713,7 @@ var designerConfig = {{ designer_config|raw }};
                         </tbody>
                         <tbody>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <input type="hidden" id="ok_add_object_db_and_table_name_url" />
                                     <input type="hidden" id="ok_add_object_db_name" />
                                     <input type="hidden" id="ok_add_object_table_name" />
@@ -687,7 +743,7 @@ var designerConfig = {{ designer_config|raw }};
         </tbody>
     </table>
     {# rename to pane #}
-    <table id="query_rename_to" class="table table-borderless w-auto hide">
+    <table id="query_rename_to" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td class="frams1" width="10px">
@@ -702,11 +758,11 @@ var designerConfig = {{ designer_config|raw }};
             <tr>
                 <td class="frams8">
                 </td>
-                <td class="input_tab p-0">
-                    <table class="table table-borderless bg-white mb-0 text-center">
+                <td class="input_tab">
+                    <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
                         <thead>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <strong>
                                         {% trans 'Rename to' %}
                                     </strong>
@@ -715,7 +771,7 @@ var designerConfig = {{ designer_config|raw }};
                         </thead>
                         <tbody id="rename_to">
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'New name' %}
                                 </td>
                                 <td width="102">
@@ -725,7 +781,7 @@ var designerConfig = {{ designer_config|raw }};
                         </tbody>
                         <tbody>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <input type="button" id="ok_edit_rename" class="btn btn-secondary butt"
                                         name="Button" value="{% trans 'OK' %}">
                                     <input id="query_rename_to_button" type="button"
@@ -753,7 +809,7 @@ var designerConfig = {{ designer_config|raw }};
         </tbody>
     </table>
     {# having query panel #}
-    <table id="query_having" class="table table-borderless w-auto hide">
+    <table id="query_having" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td class="frams1" width="10px">
@@ -768,11 +824,11 @@ var designerConfig = {{ designer_config|raw }};
             <tr>
                 <td class="frams8">
                 </td>
-                <td class="input_tab p-0">
-                    <table class="table table-borderless bg-white mb-0 text-center">
+                <td class="input_tab">
+                    <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
                         <thead>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <strong>
                                         HAVING
                                     </strong>
@@ -781,7 +837,7 @@ var designerConfig = {{ designer_config|raw }};
                         </thead>
                         <tbody id="rename_to">
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Operator' %}
                                 </td>
                                 <td width="102">
@@ -812,7 +868,7 @@ var designerConfig = {{ designer_config|raw }};
                             </tr>
                             <tr>
                                 <tr>
-                                    <td width="58" class="text-nowrap">
+                                    <td width="58" class="nowrap">
                                         {% trans 'Operator' %}
                                     </td>
                                     <td width="102">
@@ -851,7 +907,7 @@ var designerConfig = {{ designer_config|raw }};
                                     </td>
                             </tr>
                             <tr>
-                                <td class="text-nowrap">
+                                <td class="nowrap">
                                     {% trans 'Value' %}
                                     <br>
                                     {% trans 'subquery' %}
@@ -864,7 +920,7 @@ var designerConfig = {{ designer_config|raw }};
                         </tbody>
                         <tbody>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <input type="button" id="ok_edit_having" class="btn btn-secondary butt"
                                         name="Button" value="{% trans 'OK' %}">
                                     <input id="query_having_button" type="button"
@@ -892,7 +948,7 @@ var designerConfig = {{ designer_config|raw }};
         </tbody>
     </table>
     {# aggregate query pane #}
-    <table id="query_Aggregate" class="table table-borderless w-auto hide">
+    <table id="query_Aggregate" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td class="frams1" width="10px">
@@ -907,11 +963,11 @@ var designerConfig = {{ designer_config|raw }};
             <tr>
                 <td class="frams8">
                 </td>
-                <td class="input_tab p-0">
-                    <table class="table table-borderless bg-white mb-0 text-center">
+                <td class="input_tab">
+                    <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
                         <thead>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <strong>
                                         {% trans 'Aggregate' %}
                                     </strong>
@@ -920,7 +976,7 @@ var designerConfig = {{ designer_config|raw }};
                         </thead>
                         <tbody>
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Operator' %}
                                 </td>
                                 <td width="102">
@@ -949,7 +1005,7 @@ var designerConfig = {{ designer_config|raw }};
                         </tbody>
                         <tbody>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <input type="button" id="ok_edit_Aggr" class="btn btn-secondary butt"
                                         name="Button" value="{% trans 'OK' %}">
                                     <input id="query_Aggregate_Button" type="button"
@@ -977,7 +1033,7 @@ var designerConfig = {{ designer_config|raw }};
         </tbody>
     </table>
     {# where query pane #}
-    <table id="query_where" class="table table-borderless w-auto hide">
+    <table id="query_where" class="pma-table hide" width="5%" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td class="frams1" width="10px">
@@ -992,11 +1048,11 @@ var designerConfig = {{ designer_config|raw }};
             <tr>
                 <td class="frams8">
                 </td>
-                <td class="input_tab p-0">
-                    <table class="table table-borderless bg-white mb-0 text-center">
+                <td class="input_tab">
+                    <table width="168" class="pma-table text-center" cellpadding="2" cellspacing="0">
                         <thead>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <strong>
                                         WHERE
                                     </strong>
@@ -1005,7 +1061,7 @@ var designerConfig = {{ designer_config|raw }};
                         </thead>
                         <tbody id="rename_to">
                             <tr>
-                                <td width="58" class="text-nowrap">
+                                <td width="58" class="nowrap">
                                     {% trans 'Operator' %}
                                 </td>
                                 <td width="102">
@@ -1044,7 +1100,7 @@ var designerConfig = {{ designer_config|raw }};
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-nowrap">
+                                <td class="nowrap">
                                     {% trans 'Value' %}
                                     <br>
                                     {% trans 'subquery' %}
@@ -1056,7 +1112,7 @@ var designerConfig = {{ designer_config|raw }};
                         </tbody>
                         <tbody>
                             <tr>
-                                <td colspan="2" class="text-center text-nowrap">
+                                <td colspan="2" class="text-center nowrap">
                                     <input type="button" id="ok_edit_where" class="btn btn-secondary butt"
                                         name="Button" value="{% trans 'OK' %}">
                                     <input id="query_where_button" type="button" class="btn btn-secondary butt" name="Button"
@@ -1097,34 +1153,3 @@ var designerConfig = {{ designer_config|raw }};
     </div>
 {% endif %}
 <div id="PMA_disable_floating_menubar"></div>
-<div class="modal fade" id="designerGoModal" tabindex="-1" aria-labelledby="designerGoModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="designerGoModalLabel">{% trans 'Loading' %}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Cancel' %}"></button>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="designerModalGoButton">{% trans 'Go' %}</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="designerPromptModal" tabindex="-1" aria-labelledby="designerPromptModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="designerPromptModalLabel">{% trans 'Loading' %}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Cancel' %}"></button>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="designerModalYesButton">{% trans 'Yes' %}</button>
-        <button type="button" class="btn btn-secondary" id="designerModalNoButton">{% trans 'No' %}</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
-      </div>
-    </div>
-  </div>
-</div>
