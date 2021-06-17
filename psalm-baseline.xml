@@ -227,14 +227,16 @@
       <code>$success</code>
       <code>$success</code>
     </PossiblyInvalidArgument>
-    <PossiblyNullArgument occurrences="3">
+    <PossiblyNullArgument occurrences="5">
+      <code>$_GET['db']</code>
       <code>$display_page</code>
       <code>$display_page</code>
       <code>$page</code>
+      <code>$selected_page</code>
     </PossiblyNullArgument>
-    <PossiblyNullIterator occurrences="1">
-      <code>$tab_pos</code>
-    </PossiblyNullIterator>
+    <PossiblyUndefinedArrayOffset occurrences="1">
+      <code>$_GET['db']</code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="libraries/classes/Controllers/Database/ExportController.php">
     <TypeDoesNotContainNull occurrences="1">
@@ -573,14 +575,6 @@
       <code>(int) $displayPage</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="libraries/classes/Database/Designer/Common.php">
-    <PossiblyUndefinedArrayOffset occurrences="4">
-      <code>$con['DCN']</code>
-      <code>$con['DTN']</code>
-      <code>$con['SCN']</code>
-      <code>$con['STN']</code>
-    </PossiblyUndefinedArrayOffset>
-  </file>
   <file src="libraries/classes/Database/Events.php">
     <PossiblyNullArgument occurrences="1">
       <code>$create_item</code>
@@ -733,6 +727,29 @@
     <PossiblyUndefinedArrayOffset occurrences="1">
       <code>$analyzedSqlResults['statement']</code>
     </PossiblyUndefinedArrayOffset>
+    <RedundantCast occurrences="21">
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '0'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+      <code>(string) '1'</code>
+    </RedundantCast>
     <RedundantCastGivenDocblockType occurrences="6">
       <code>(int) $meta-&gt;length</code>
       <code>(string) $fieldsMeta-&gt;name</code>
@@ -1074,8 +1091,9 @@
     <NullableReturnStatement occurrences="1">
       <code>$dispval</code>
     </NullableReturnStatement>
-    <PossiblyInvalidOperand occurrences="1">
+    <PossiblyInvalidOperand occurrences="2">
       <code>$insertId</code>
+      <code>$tmp</code>
     </PossiblyInvalidOperand>
     <PossiblyNullArrayAccess occurrences="1">
       <code>$dispval</code>
@@ -1467,6 +1485,11 @@
       <code>attributes</code>
     </PossiblyNullReference>
     <UndefinedPropertyFetch occurrences="1"/>
+  </file>
+  <file src="libraries/classes/Plugins/Import/Upload/UploadProgress.php">
+    <TooManyArguments occurrences="1">
+      <code>uploadprogress_get_info($id)</code>
+    </TooManyArguments>
   </file>
   <file src="libraries/classes/Plugins/ImportPlugin.php">
     <RedundantCastGivenDocblockType occurrences="1">
@@ -2205,12 +2228,22 @@
     </PossiblyNullArgument>
   </file>
   <file src="libraries/classes/Sql.php">
-    <InvalidArgument occurrences="2">
+    <InvalidArgument occurrences="4">
       <code>$result</code>
       <code>$result</code>
+      <code>$showTable</code>
+      <code>$showTable</code>
     </InvalidArgument>
-    <InvalidScalarArgument occurrences="2">
+    <InvalidReturnStatement occurrences="1">
+      <code>$numRows</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
+    <InvalidScalarArgument occurrences="4">
       <code>$error</code>
+      <code>$numRows</code>
+      <code>$numRows</code>
       <code>''</code>
     </InvalidScalarArgument>
     <PossiblyFalseReference occurrences="1">
@@ -2223,7 +2256,7 @@
     <PossiblyInvalidOperand occurrences="1">
       <code>$insertId</code>
     </PossiblyInvalidOperand>
-    <PossiblyNullArgument occurrences="17">
+    <PossiblyNullArgument occurrences="20">
       <code>$_POST['purge'] ?? null</code>
       <code>$db</code>
       <code>$db</code>
@@ -2232,8 +2265,11 @@
       <code>$db</code>
       <code>$extraData ?? null</code>
       <code>$messageToShow ?? null</code>
+      <code>$printView</code>
+      <code>$printView</code>
       <code>$result ?? null</code>
       <code>$row[0]</code>
+      <code>$showtable</code>
       <code>$sqlData ?? null</code>
       <code>$sqlQueryForBookmark ?? null</code>
       <code>$table</code>
