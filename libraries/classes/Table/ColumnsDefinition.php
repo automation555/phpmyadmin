@@ -9,7 +9,6 @@ use PhpMyAdmin\Charsets\Charset;
 use PhpMyAdmin\Charsets\Collation;
 use PhpMyAdmin\DatabaseInterface;
 use PhpMyAdmin\Partition;
-use PhpMyAdmin\Query\Compatibility;
 use PhpMyAdmin\Relation;
 use PhpMyAdmin\StorageEngine;
 use PhpMyAdmin\Table;
@@ -17,7 +16,6 @@ use PhpMyAdmin\TablePartitionDefinition;
 use PhpMyAdmin\Transformations;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
-
 use function array_merge;
 use function bin2hex;
 use function count;
@@ -91,7 +89,6 @@ final class ColumnsDefinition
                     $form_params['after_field'] = $_POST['after_field'];
                 }
             }
-
             $form_params['table'] = $table;
         }
 
@@ -154,16 +151,14 @@ final class ColumnsDefinition
                 $submit_fulltext[$fulltext_indexkey] = $fulltext_indexkey;
             }
         }
-
-        if (
-            isset($_POST['submit_num_fields'])
+        if (isset($_POST['submit_num_fields'])
             || isset($_POST['submit_partition_change'])
         ) {
             //if adding new fields, set regenerate to keep the original values
             $regenerate = 1;
         }
 
-        $foreigners = $relation->getForeigners($db, $table, '', 'foreign');
+         $foreigners = $relation->getForeigners($db, $table, '', 'foreign');
         $child_references = null;
         // From MySQL 5.6.6 onwards columns with foreign keys can be renamed.
         // Hence, no need to get child references
@@ -250,7 +245,8 @@ final class ColumnsDefinition
                     );
                 }
 
-                $columnMeta['Comment'] = isset($submit_fulltext[$columnNumber])
+                $columnMeta['Comment']
+                    = isset($submit_fulltext[$columnNumber])
                 && ($submit_fulltext[$columnNumber] == $columnNumber)
                     ? 'FULLTEXT' : false;
 
@@ -308,7 +304,6 @@ final class ColumnsDefinition
                     );
                     $columnMeta['Expression'] = is_array($expressions) ? $expressions[$columnMeta['Field']] : null;
                 }
-
                 switch ($columnMeta['Default']) {
                     case null:
                         if ($columnMeta['Default'] === null) {
@@ -323,7 +318,6 @@ final class ColumnsDefinition
                             $columnMeta['DefaultType'] = 'USER_DEFINED';
                             $columnMeta['DefaultValue'] = $columnMeta['Default'];
                         }
-
                         break;
                     case 'CURRENT_TIMESTAMP':
                     case 'current_timestamp()':
@@ -348,9 +342,9 @@ final class ColumnsDefinition
                     $columnMeta['Type']
                 );
                 if ($extracted_columnspec['type'] === 'bit') {
-                    $columnMeta['Default'] = Util::convertBitDefaultValue($columnMeta['Default']);
+                    $columnMeta['Default']
+                        = Util::convertBitDefaultValue($columnMeta['Default']);
                 }
-
                 $type = $extracted_columnspec['type'];
                 if ($length == '') {
                     $length = $extracted_columnspec['spec_in_brackets'];
@@ -386,12 +380,13 @@ final class ColumnsDefinition
             if ($is_backup) {
                 // old column name
                 if (isset($columnMeta['Field'])) {
-                    $form_params['field_orig[' . $columnNumber . ']'] = $columnMeta['Field'];
-                    if (
-                        isset($columnMeta['column_status'])
+                    $form_params['field_orig[' . $columnNumber . ']']
+                        = $columnMeta['Field'];
+                    if (isset($columnMeta['column_status'])
                         && ! $columnMeta['column_status']['isEditable']
                     ) {
-                        $form_params['field_name[' . $columnNumber . ']'] = $columnMeta['Field'];
+                        $form_params['field_name[' . $columnNumber . ']']
+                            = $columnMeta['Field'];
                     }
                 } else {
                     $form_params['field_orig[' . $columnNumber . ']'] = '';
@@ -401,8 +396,7 @@ final class ColumnsDefinition
                 if (isset($columnMeta['Type'])) {
                     // keep in uppercase because the new type will be in uppercase
                     $form_params['field_type_orig[' . $columnNumber . ']'] = mb_strtoupper($type);
-                    if (
-                        isset($columnMeta['column_status'])
+                    if (isset($columnMeta['column_status'])
                         && ! $columnMeta['column_status']['isEditable']
                     ) {
                         $form_params['field_type[' . $columnNumber . ']'] = mb_strtoupper($type);
@@ -467,23 +461,26 @@ final class ColumnsDefinition
 
             $default_value = '';
             $type_upper = mb_strtoupper($type);
+            $default_function = $GLOBALS['dbi']->types->getFunctions($type_upper);
 
             // For a TIMESTAMP, do not show the string "CURRENT_TIMESTAMP" as a default value
             if (isset($columnMeta['DefaultValue'])) {
                 $default_value = $columnMeta['DefaultValue'];
             }
-
             if ($type_upper === 'BIT') {
                 $default_value = Util::convertBitDefaultValue($columnMeta['DefaultValue']);
             } elseif ($type_upper === 'BINARY' || $type_upper === 'VARBINARY') {
                 $default_value = bin2hex($columnMeta['DefaultValue']);
             }
+            $default_function = $GLOBALS['dbi']->types->getAllFunctions();
+
 
             $content_cells[$columnNumber] = [
                 'column_number' => $columnNumber,
                 'column_meta' => $columnMeta,
                 'type_upper' => $type_upper,
                 'default_value' => $default_value,
+                'default_function' => $default_function,
                 'length_values_input_size' => $length_values_input_size,
                 'length' => $length,
                 'extracted_columnspec' => $extracted_columnspec,
@@ -513,7 +510,6 @@ final class ColumnsDefinition
                     'description' => $collation->getDescription(),
                 ];
             }
-
             $charsetsList[] = [
                 'name' => $charset->getName(),
                 'description' => $charset->getDescription(),
@@ -544,9 +540,9 @@ final class ColumnsDefinition
             'storage_engines' => $storageEngines,
             'connection' => $_POST['connection'] ?? null,
             'change_column' => $_POST['change_column'] ?? $_GET['change_column'] ?? null,
-            'is_virtual_columns_supported' => Compatibility::isVirtualColumnsSupported($dbi->getVersion()),
+            'is_virtual_columns_supported' => Util::isVirtualColumnsSupported(),
             'browse_mime' => $cfg['BrowseMIME'] ?? null,
-            'supports_stored_keyword' => Compatibility::supportsStoredKeywordForVirtualColumns($dbi->getVersion()),
+            'server_type' => Util::getServerType(),
             'server_version' => $dbi->getVersion(),
             'max_rows' => intval($cfg['MaxRows']),
             'char_editing' => $cfg['CharEditing'] ?? null,
