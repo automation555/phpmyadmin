@@ -8,8 +8,8 @@ use PhpMyAdmin\Charsets;
 use PhpMyAdmin\Charsets\Charset;
 use PhpMyAdmin\Charsets\Collation;
 use PhpMyAdmin\DatabaseInterface;
-use PhpMyAdmin\Partition;
 use PhpMyAdmin\Query\Compatibility;
+use PhpMyAdmin\Partition;
 use PhpMyAdmin\Relation;
 use PhpMyAdmin\StorageEngine;
 use PhpMyAdmin\Table;
@@ -250,7 +250,8 @@ final class ColumnsDefinition
                     );
                 }
 
-                $columnMeta['Comment'] = isset($submit_fulltext[$columnNumber])
+                $columnMeta['Comment']
+                    = isset($submit_fulltext[$columnNumber])
                 && ($submit_fulltext[$columnNumber] == $columnNumber)
                     ? 'FULLTEXT' : false;
 
@@ -348,7 +349,8 @@ final class ColumnsDefinition
                     $columnMeta['Type']
                 );
                 if ($extracted_columnspec['type'] === 'bit') {
-                    $columnMeta['Default'] = Util::convertBitDefaultValue($columnMeta['Default']);
+                    $columnMeta['Default']
+                        = Util::convertBitDefaultValue($columnMeta['Default']);
                 }
 
                 $type = $extracted_columnspec['type'];
@@ -386,12 +388,14 @@ final class ColumnsDefinition
             if ($is_backup) {
                 // old column name
                 if (isset($columnMeta['Field'])) {
-                    $form_params['field_orig[' . $columnNumber . ']'] = $columnMeta['Field'];
+                    $form_params['field_orig[' . $columnNumber . ']']
+                        = $columnMeta['Field'];
                     if (
                         isset($columnMeta['column_status'])
                         && ! $columnMeta['column_status']['isEditable']
                     ) {
-                        $form_params['field_name[' . $columnNumber . ']'] = $columnMeta['Field'];
+                        $form_params['field_name[' . $columnNumber . ']']
+                            = $columnMeta['Field'];
                     }
                 } else {
                     $form_params['field_orig[' . $columnNumber . ']'] = '';
@@ -522,6 +526,7 @@ final class ColumnsDefinition
         }
 
         $storageEngines = StorageEngine::getArray();
+        $isIntegersLengthRestricted = Compatibility::isIntegersLengthRestricted($dbi);
 
         return [
             'is_backup' => $is_backup,
@@ -544,9 +549,10 @@ final class ColumnsDefinition
             'storage_engines' => $storageEngines,
             'connection' => $_POST['connection'] ?? null,
             'change_column' => $_POST['change_column'] ?? $_GET['change_column'] ?? null,
-            'is_virtual_columns_supported' => Compatibility::isVirtualColumnsSupported($dbi->getVersion()),
+            'is_virtual_columns_supported' => Util::isVirtualColumnsSupported(),
+            'is_integers_length_restricted' => $isIntegersLengthRestricted,
             'browse_mime' => $cfg['BrowseMIME'] ?? null,
-            'supports_stored_keyword' => Compatibility::supportsStoredKeywordForVirtualColumns($dbi->getVersion()),
+            'server_type' => Util::getServerType(),
             'server_version' => $dbi->getVersion(),
             'max_rows' => intval($cfg['MaxRows']),
             'char_editing' => $cfg['CharEditing'] ?? null,

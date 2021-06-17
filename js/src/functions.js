@@ -17,7 +17,6 @@ var Functions = {};
 /**
  * @var sqlBoxLocked lock for the sqlbox textarea in the querybox
  */
-// eslint-disable-next-line no-unused-vars
 var sqlBoxLocked = false;
 
 /**
@@ -484,6 +483,7 @@ Functions.hideShowExpression = function ($virtuality) {
 Functions.verifyColumnsProperties = function () {
     $('select.column_type').each(function () {
         Functions.showNoticeForEnum($(this));
+        Functions.showWarningForIntTypes();
     });
     $('select.default_type').each(function () {
         Functions.hideShowDefaultValue($(this));
@@ -2422,7 +2422,7 @@ $(function () {
         }, 250);
     });
 
-    $(document).on('mouseup', 'span.ajax_notification.dismissable', function (event) {
+    $(document).on('mouseup', 'span.ajax_notification.dismissable', function () {
         if (holdStarter && event.which === 1) {
             clearTimeout(holdStarter);
             Functions.ajaxRemoveMessage($(this));
@@ -2492,6 +2492,25 @@ Functions.showNoticeForEnum = function (selectElement) {
         $('p#enum_notice_' + enumNoticeId).show();
     } else {
         $('p#enum_notice_' + enumNoticeId).hide();
+    }
+};
+
+/**
+ * Hides/shows a warning message when LENGTH is used with inappropriate integer type
+ */
+Functions.showWarningForIntTypes = function () {
+    if ($('div#length_not_allowed').length) {
+        var lengthRestrictions = $('select.column_type option').map(function () {
+            return $(this).filter(':selected').attr('data-length-restricted');
+        }).get();
+
+        var restricationFound = lengthRestrictions.some(restriction => Number(restriction) === 1);
+
+        if (restricationFound) {
+            $('div#length_not_allowed').show();
+        } else {
+            $('div#length_not_allowed').hide();
+        }
     }
 };
 
@@ -3224,7 +3243,7 @@ AJAX.registerOnload('functions.js', function () {
             // for this dialog, we remove the fieldset wrapping due to double headings
             $('fieldset#fieldset_change_password')
                 .find('legend').remove().end()
-                .find('table.table').unwrap().addClass('m-3')
+                .find('table.noclick').unwrap().addClass('some-margin')
                 .find('input#text_pma_pw').trigger('focus');
             $('#fieldset_change_password_footer').hide();
             Functions.ajaxRemoveMessage($msgbox);
@@ -3263,6 +3282,7 @@ AJAX.registerOnload('functions.js', function () {
     // needs on() to work also in the Create Table dialog
     $(document).on('change', 'select.column_type', function () {
         Functions.showNoticeForEnum($(this));
+        Functions.showWarningForIntTypes();
     });
     $(document).on('change', 'select.default_type', function () {
         Functions.hideShowDefaultValue($(this));
@@ -3285,7 +3305,8 @@ AJAX.registerOnload('functions.js', function () {
  */
 Functions.hideShowConnection = function ($engineSelector) {
     var $connection = $('.create_table_form input[name=connection]');
-    var $labelTh = $('.create_table_form #storage-engine-connection');
+    var index = $connection.parent('td').index();
+    var $labelTh = $connection.parents('tr').prev('tr').children('th').eq(index);
     if ($engineSelector.val() !== 'FEDERATED') {
         $connection
             .prop('disabled', true)
@@ -3457,9 +3478,9 @@ AJAX.registerOnload('functions.js', function () {
                     '<legend>' + title + '</legend>' +
                     '<p>' + Functions.getImage('s_notice') +
                     Messages.enum_hint + '</p>' +
-                    '<table class="table table-borderless values">' + fields + '</table>' +
+                    '<table class=\'pma-table values\'>' + fields + '</table>' +
                     '</fieldset><fieldset class="pma-fieldset tblFooters">' +
-                    '<table class="table table-borderless add"><tr><td>' +
+                    '<table class=\'pma-table add\'><tr><td>' +
                     '<div class=\'slider\'></div>' +
                     '</td><td>' +
                     '<form><div><input type=\'submit\' class=\'add_value btn btn-primary\' value=\'' +
@@ -3598,7 +3619,7 @@ AJAX.registerOnload('functions.js', function () {
         var centralColumnsDialog = '<div class=\'max_height_400\'>' +
             '<fieldset class="pma-fieldset">' +
             searchIn +
-            '<table id="col_list" class="table table-borderless values">' + fields + '</table>' +
+            '<table id=\'col_list\' class=\'pma-table values w-100\'>' + fields + '</table>' +
             '</fieldset>' +
             seeMore +
             '</div>';
@@ -3881,6 +3902,7 @@ Functions.showIndexEditDialog = function ($outer) {
         tolerance: 'pointer'
     });
     Functions.showHints($outer);
+    Functions.initSlider();
     // Add a slider for selecting how many columns to add to the index
     $outer.find('.slider').slider({
         animate: true,
@@ -3951,6 +3973,21 @@ $(function () {
         $('#topmenu').menuResizer('resize');
     });
 });
+
+/**
+ * Changes status of slider
+ *
+ * @param $element
+ */
+Functions.setStatusLabel = function ($element) {
+    var text;
+    if ($element.css('display') === 'none') {
+        text = '+ ';
+    } else {
+        text = '- ';
+    }
+    $element.closest('.slide-wrapper').prev().find('span').text(text);
+};
 
 /**
  * var  toggleButton  This is a function that creates a toggle
@@ -4130,6 +4167,11 @@ AJAX.registerOnload('functions.js', function () {
         }
     });
 
+    /**
+     * Slider effect.
+     */
+    Functions.initSlider();
+
     var $updateRecentTables = $('#update_recent_tables');
     if ($updateRecentTables.length) {
         $.get(
@@ -4166,6 +4208,60 @@ AJAX.registerOnload('functions.js', function () {
         });
     }
 }); // end of $()
+
+/**
+ * Initializes slider effect.
+ */
+Functions.initSlider = function () {
+    $('div.pma_auto_slider').each(function () {
+        var $this = $(this);
+        if ($this.data('slider_init_done')) {
+            return;
+        }
+        var $wrapper = $('<div>', { 'class': 'slide-wrapper' });
+        $wrapper.toggle($this.is(':visible'));
+        $('<a>', { href: '#' + this.id, 'class': 'ajax' })
+            .text($this.attr('title'))
+            .prepend($('<span>'))
+            .insertBefore($this)
+            .on('click', function () {
+                var $wrapper = $this.closest('.slide-wrapper');
+                var visible = $this.is(':visible');
+                if (!visible) {
+                    $wrapper.show();
+                }
+                $this[visible ? 'hide' : 'show']('blind', function () {
+                    $wrapper.toggle(!visible);
+                    $wrapper.parent().toggleClass('print_ignore', visible);
+                    Functions.setStatusLabel($this);
+                });
+                return false;
+            });
+        $this.wrap($wrapper);
+        $this.removeAttr('title');
+        Functions.setStatusLabel($this);
+        $this.data('slider_init_done', 1);
+    });
+};
+
+/**
+ * Initializes slider effect.
+ */
+AJAX.registerOnload('functions.js', function () {
+    Functions.initSlider();
+});
+
+/**
+ * Restores sliders to the state they were in before initialisation.
+ */
+AJAX.registerTeardown('functions.js', function () {
+    $('div.pma_auto_slider').each(function () {
+        var $this = $(this);
+        $this.removeData();
+        $this.parent().replaceWith($this);
+        $this.parent().children('a').remove();
+    });
+});
 
 /**
  * Creates a message inside an object with a sliding effect
@@ -4490,7 +4586,6 @@ Functions.createViewDialog = function ($this) {
             var $dialog = $('<div></div>').attr('id', 'createViewDialog').append(data.message).dialog({
                 width: 600,
                 minWidth: 400,
-                height: $(window).height(),
                 modal: true,
                 buttons: buttonOptions,
                 title: Messages.strCreateView,

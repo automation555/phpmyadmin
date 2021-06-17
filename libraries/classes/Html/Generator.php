@@ -13,9 +13,11 @@ use PhpMyAdmin\Profiling;
 use PhpMyAdmin\Providers\ServerVariables\ServerVariablesProvider;
 use PhpMyAdmin\Response;
 use PhpMyAdmin\Sanitize;
+use PhpMyAdmin\Query\Compatibility;
 use PhpMyAdmin\SqlParser\Lexer;
 use PhpMyAdmin\SqlParser\Parser;
 use PhpMyAdmin\SqlParser\Utils\Error as ParserError;
+use PhpMyAdmin\Template;
 use PhpMyAdmin\Url;
 use PhpMyAdmin\Util;
 use Throwable;
@@ -23,8 +25,6 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-use function __;
-use function _pgettext;
 use function addslashes;
 use function array_key_exists;
 use function ceil;
@@ -433,34 +433,52 @@ class Generator
     }
 
     /**
-     * @return array<string, int|string>
-     * @psalm-return array{pos: int, unlim_num_rows: int, rows: int, sql_query: string}
+     * Function to get html for the start row and number of rows panel
+     *
+     * @param string $sqlQuery sql query
+     *
+     * @return string html
+     *
+     * @throws Throwable
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public static function getStartAndNumberOfRowsFieldsetData(string $sqlQuery): array
+    public static function getStartAndNumberOfRowsPanel($sqlQuery): string
     {
+        $template = new Template();
+
         if (isset($_REQUEST['session_max_rows'])) {
-            $rows = (int) $_REQUEST['session_max_rows'];
+            $rows = $_REQUEST['session_max_rows'];
         } elseif (
             isset($_SESSION['tmpval']['max_rows'])
             && $_SESSION['tmpval']['max_rows'] !== 'all'
         ) {
-            $rows = (int) $_SESSION['tmpval']['max_rows'];
+            $rows = $_SESSION['tmpval']['max_rows'];
         } else {
             $rows = (int) $GLOBALS['cfg']['MaxRows'];
             $_SESSION['tmpval']['max_rows'] = $rows;
         }
 
-        $numberOfLine = (int) $_REQUEST['unlim_num_rows'];
         if (isset($_REQUEST['pos'])) {
-            $pos = (int) $_REQUEST['pos'];
+            $pos = $_REQUEST['pos'];
         } elseif (isset($_SESSION['tmpval']['pos'])) {
-            $pos = (int) $_SESSION['tmpval']['pos'];
+            $pos = $_SESSION['tmpval']['pos'];
         } else {
-            $pos = ((int) ceil($numberOfLine / $rows) - 1) * $rows;
+            $numberOfLine = (int) $_REQUEST['unlim_num_rows'];
+            $pos = (ceil($numberOfLine / $rows) - 1) * $rows;
             $_SESSION['tmpval']['pos'] = $pos;
         }
 
-        return ['pos' => $pos, 'unlim_num_rows' => $numberOfLine, 'rows' => $rows, 'sql_query' => $sqlQuery];
+        return $template->render(
+            'start_and_number_of_rows_panel',
+            [
+                'pos' => $pos,
+                'unlim_num_rows' => (int) $_REQUEST['unlim_num_rows'],
+                'rows' => $rows,
+                'sql_query' => $sqlQuery,
+            ]
+        );
     }
 
     /**
@@ -614,7 +632,7 @@ class Generator
                     . '</pre></code>';
             } elseif ($queryTooBig) {
                 $queryBase = '<code class="sql"><pre>' . "\n" .
-                    htmlspecialchars($queryBase, ENT_COMPAT) .
+                    htmlspecialchars($queryBase) .
                     '</pre></code>';
             } else {
                 $queryBase = self::formatSql($queryBase);
@@ -662,7 +680,8 @@ class Generator
                         $sqlQuery
                     )
                 ) {
-                    $explainParams['sql_query'] = mb_substr($sqlQuery, 8);
+                    $explainParams['sql_query']
+                        = mb_substr($sqlQuery, 8);
                     $explainLink = ' [&nbsp;'
                         . self::linkOrButton(
                             Url::getFromRoute('/import', $explainParams),
@@ -1335,7 +1354,7 @@ class Generator
         }
 
         return '<code class="sql"><pre>' . "\n"
-            . htmlspecialchars($sqlQuery, ENT_COMPAT) . "\n"
+            . htmlspecialchars($sqlQuery) . "\n"
             . '</pre></code>';
     }
 
@@ -1357,9 +1376,11 @@ class Generator
             if (is_array($value)) {
                 $retval .= '<optgroup label="' . htmlspecialchars($key) . '">';
                 foreach ($value as $subvalue) {
+                    $isLengthRestricted = Compatibility::isIntegersSupportLength($subvalue, '2', $dbi) === true ? 0 : 1;
                     if ($subvalue == $selected) {
                         $retval .= sprintf(
-                            '<option selected="selected" title="%s">%s</option>',
+                            '<option data-length-restricted="%b" selected="selected" title="%s">%s</option>',
+                            $isLengthRestricted,
                             $dbi->types->getTypeDescription($subvalue),
                             $subvalue
                         );
@@ -1369,7 +1390,8 @@ class Generator
                         $retval .= '</option>';
                     } else {
                         $retval .= sprintf(
-                            '<option title="%s">%s</option>',
+                            '<option data-length-restricted="%b" title="%s">%s</option>',
+                            $isLengthRestricted,
                             $dbi->types->getTypeDescription($subvalue),
                             $subvalue
                         );
@@ -1377,18 +1399,23 @@ class Generator
                 }
 
                 $retval .= '</optgroup>';
-            } elseif ($selected == $value) {
-                $retval .= sprintf(
-                    '<option selected="selected" title="%s">%s</option>',
-                    $dbi->types->getTypeDescription($value),
-                    $value
-                );
             } else {
-                $retval .= sprintf(
-                    '<option title="%s">%s</option>',
-                    $dbi->types->getTypeDescription($value),
-                    $value
-                );
+                $isLengthRestricted = Compatibility::isIntegersSupportLength($value, '2', $dbi) === true ? 0 : 1;
+                if ($selected == $value) {
+                    $retval .= sprintf(
+                        '<option data-length-restricted="%b" selected="selected" title="%s">%s</option>',
+                        $isLengthRestricted,
+                        $dbi->types->getTypeDescription($value),
+                        $value
+                    );
+                } else {
+                    $retval .= sprintf(
+                        '<option data-length-restricted="%b" title="%s">%s</option>',
+                        $isLengthRestricted,
+                        $dbi->types->getTypeDescription($value),
+                        $value
+                    );
+                }
             }
         }
 
