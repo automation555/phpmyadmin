@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace PhpMyAdmin\Controllers;
 
-use PhpMyAdmin\Theme;
-
-use function __;
-use function _pgettext;
 use function json_encode;
 
 /**
@@ -30,9 +26,9 @@ final class JavaScriptMessagesController
 
     private function setMessages(): void
     {
-        global $cfg, $theme;
+        global $cfg, $PMA_Theme;
 
-        $ajaxClockSmallGifPath = $theme instanceof Theme ? $theme->getImgPath('ajax_clock_small.gif') : '';
+        $ajaxClockSmallGifPath = $PMA_Theme !== null ? $PMA_Theme->getImgPath('ajax_clock_small.gif') : '';
 
         $this->messages = [
             /* For confirmations */
@@ -344,7 +340,6 @@ final class JavaScriptMessagesController
                 'network connectivity and server status.'
             ),
             'strNoDatabasesSelected' => __('No databases selected.'),
-            'strNoTableSelected' => __('No table selected.'),
             'strNoAccountSelected' => __('No accounts selected.'),
             'strDroppingColumn' => __('Dropping column'),
             'strAddingPrimaryKey' => __('Adding primary key'),
@@ -360,7 +355,7 @@ final class JavaScriptMessagesController
             /* For Foreign key checks */
             'strForeignKeyCheck' => __('Enable foreign key checks'),
 
-            /* For database/structure.js */
+            /* For db_stucture.js */
             'strErrorRealRowCount' => __('Failed to get real row count.'),
 
             /* For database/search.js */
@@ -371,7 +366,7 @@ final class JavaScriptMessagesController
             'strDeleting' => __('Deleting'),
             'strConfirmDeleteResults' => __('Delete the matches for the %s table?'),
 
-            /* For rte.js */
+            /* For db_routines.js */
             'MissingReturn' => __('The definition of a stored function must contain a RETURN statement!'),
             'strExport' => __('Export'),
             'NoExportable' => __('No routine is exportable. Required privileges may be lacking.'),
@@ -395,10 +390,6 @@ final class JavaScriptMessagesController
             'strDelete' => __('Delete'),
             'strNotValidRowNumber' => __('%d is not valid row number.'),
             'strBrowseForeignValues' => __('Browse foreign values'),
-            'strNoAutoSavedQuery' => __('No previously auto-saved query is available. Loading default query.'),
-            'strPreviousSaveQuery' => __(
-                'You have a previously saved query. Click Get auto-saved query to load the query.'
-            ),
             'strBookmarkVariable' => __('Variable %d:'),
 
             /* For Central list of columns */
@@ -410,8 +401,14 @@ final class JavaScriptMessagesController
                 . 'database %s has columns that are not present in the current table.'
             ),
             'seeMore' => __('See more'),
+            'confirmTitle' => __('Are you sure?'),
+            'makeConsistentMessage' => __(
+                'This action may change some of the columns definition.<br>Are you sure you '
+                . 'want to continue?'
+            ),
+            'strContinue' => __('Continue'),
 
-            /* For normalization */
+            /** For normalization */
             'strAddPrimaryKey' => __('Add primary key'),
             'strPrimaryKeyAdded' => __('Primary key added.'),
             'strToNextStep' => __('Taking you to next step…'),
@@ -537,8 +534,6 @@ final class JavaScriptMessagesController
             'strSavePageAs' => __('Save page as'),
             'strOpenPage' => __('Open page'),
             'strDeletePage' => __('Delete page'),
-            /* l10n: When the user opens a page saved in the Designer */
-            'strSavedPageTableMissing' => __('Some tables saved in this page might have been renamed or deleted.'),
             'strUntitled' => __('Untitled'),
             'strSelectPage' => __('Please select a page to continue'),
             'strEnterValidPageName' => __('Please enter a valid page name'),
@@ -553,10 +548,7 @@ final class JavaScriptMessagesController
             'strSubmit' => __('Submit'),
 
             /* For makegrid.js (column reordering, show/hide column, grid editing) */
-            'strCellEditHint' => __(
-                'Press escape to cancel editing.'
-                . '<br>- Shift+Enter for a newline.'
-            ),
+            'strCellEditHint' => __('Press escape to cancel editing.'),
             'strSaveCellWarning' => __(
                 'You have edited some data and they have not been saved. Are you sure you want '
                 . 'to leave this page before saving the data?'
@@ -585,7 +577,7 @@ final class JavaScriptMessagesController
             ),
             'strOriginalLength' => __('Original length'),
 
-            /* Drag & Drop sql import messages */
+            /** Drag & Drop sql import messages */
             'dropImportMessageCancel' => __('cancel'),
             'dropImportMessageAborted' => __('Aborted'),
             'dropImportMessageFailed' => __('Failed'),
@@ -624,6 +616,9 @@ final class JavaScriptMessagesController
             'linkWithMain' => __('Link with main panel'),
             'unlinkWithMain' => __('Unlink from main panel'),
 
+            /* microhistory */
+            'strInvalidPage' => __('The requested page was not found in the history, it may have expired.'),
+
             /* update */
             'strNewerVersion' => __(
                 'A newer version of phpMyAdmin is available and you should consider upgrading. '
@@ -636,6 +631,8 @@ final class JavaScriptMessagesController
             'strCreateView' => __('Create view'),
 
             /* Error Reporting */
+            'strSendErrorReport' => __('Send error report'),
+            'strSubmitErrorReport' => __('Submit error report'),
             'strErrorOccurred' => __(
                 'A fatal JavaScript error has occurred. Would you like to send an error report?'
             ),
@@ -658,10 +655,10 @@ final class JavaScriptMessagesController
                 . '<div>'
                 . '<input id="pma_ignore_errors_popup" type="submit" value="'
                 . __('Ignore')
-                . '" class="btn btn-secondary float-end message_errors_found">'
+                . '" class="btn btn-secondary floatright message_errors_found">'
                 . '<input id="pma_ignore_all_errors_popup" type="submit" value="'
                 . __('Ignore All')
-                . '" class="btn btn-secondary float-end message_errors_found">'
+                . '" class="btn btn-secondary floatright message_errors_found">'
                 . '</div></div>',
 
             'phpErrorsBeingSubmitted' => '<div class="alert alert-danger" role="alert">'
@@ -709,18 +706,8 @@ final class JavaScriptMessagesController
             'strStrong' => __('Strong'),
 
             /* U2F errors */
-            // l10n: error code 5 (from U2F API)
-            'strU2FTimeout' => _pgettext('U2F error', 'Timed out waiting for security key activation.'),
-            // l10n: error code 2 (from U2F API)
-            'strU2FBadRequest' => _pgettext('U2F error', 'Invalid request sent to security key.'),
-            // l10n: unknown error code (from U2F API)
-            'strU2FUnknown' => _pgettext('U2F error', 'Unknown security key error.'),
-            // l10n: error code 3 (from U2F API)
-            'strU2FInvalidClient' => _pgettext('U2F error', 'Client does not support security key.'),
-            // l10n: error code 4 (from U2F API) on register
-            'strU2FErrorRegister' => _pgettext('U2F error', 'Failed security key activation.'),
-            // l10n: error code 4 (from U2F API) on authanticate
-            'strU2FErrorAuthenticate' => _pgettext('U2F error', 'Invalid security key.'),
+            'strU2FTimeout' => __('Timed out waiting for security key activation.'),
+            'strU2FError' => __('Failed security key activation (%s).'),
 
             /* Designer */
             'strTableAlreadyExists' => _pgettext(
