@@ -432,6 +432,19 @@ AJAX.registerOnload('server/privileges.js', function () {
         addOrUpdateSubmenu();
     }
 
+    var tableSelectAll = function (e) {
+        const method = e.target.getAttribute('data-select-target');
+        var options = $(method).first().children();
+        options.each(function (key,obj) {
+            obj.selected = true;
+        });
+    };
+
+    $('#select_priv_all').on('click', tableSelectAll);
+    $('#insert_priv_all').on('click', tableSelectAll);
+    $('#update_priv_all').on('click', tableSelectAll);
+    $('#references_priv_all').on('click', tableSelectAll);
+
     var windowWidth = $(window).width();
     $('.jsresponsive').css('max-width', (windowWidth - 35) + 'px');
 
